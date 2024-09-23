@@ -1,0 +1,35 @@
+<div class="weekly2-news-area  weekly2-pading gray-bg">
+    <div class="container">
+      <div class="weekly2-wrapper">
+        <!-- section Tittle -->
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="section-tittle mb-30">
+              <h3>Monthly Top News</h3>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="weekly2-news-active dot-style d-flex dot-style">
+              <% news.forEach(function(item) { %>
+              <div class="weekly2-single">
+                <div class="weekly2-img">
+                  <img src="<%= item.imageUrl %>" alt="">
+                </div>
+                <div class="weekly2-caption">
+                  <span class="color1"><%= item.source %></span>
+                  <p><%= new Date(item.releaseTime).toLocaleDateString() %></p>
+                  <h4>
+                    <a href="<%= item.link %>" target="_blank"><%= item.title %></a>
+                  </h4>
+                    <a href="/details/<%= item.id %>" id="details-btn">Details</a>
+                </div>
+              </div>
+              <% }); %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

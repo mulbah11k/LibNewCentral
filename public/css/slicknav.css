@@ -260,3 +260,21 @@
 	background: transparent;
 	color: #dca73a;
 }
+.weekly-img img {
+  width: 330px;
+  height: 307px;
+  object-fit: cover; /* This will crop the image to fit without distorting */
+}
+
+/* Monthly Top News Images */
+.weekly2-img img {
+  width: 330px;
+  height: 307px;
+  object-fit: cover; /* Crops image without distortion */
+}
+.recent-articles .single-recent .what-img img {
+  width: 330px;
+  height: 307px;
+  object-fit: cover; /* Crops image without distortion */
+}
+

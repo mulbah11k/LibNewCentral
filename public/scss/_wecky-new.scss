@@ -11,8 +11,11 @@
             .weekly-img{
                
                 img{
-                    width: 100%;
+                    // width: 100%;
                     border-radius: 6px;
+                    width: 330px;
+                    height: 307px;
+                    object-fit: cover;
                 }
             }
             .weekly-caption{

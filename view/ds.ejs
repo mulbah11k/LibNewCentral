@@ -1,0 +1,24 @@
+<div class="news-detail">
+    <!-- News Source -->
+    <h4><%= news.source %></h4>
+  
+    <!-- News Title -->
+    <h2><%= news.title %></h2>
+  
+    <!-- News Full Content -->
+    <p><%= news.content %></p>
+  
+    <!-- Link to Original Source -->
+    <p><a href="<%= news.original_link %>" target="_blank">Read on original site</a></p>
+  
+    <!-- Social Share Section -->
+    <div class="social-share">
+      <h3>Share this news:</h3>
+      <ul>
+        <li><a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent('https://yourwebsite.com/details/' + news.id) %>" target="_blank">Share on Facebook</a></li>
+        <li><a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://yourwebsite.com/details/' + news.id) %>" target="_blank">Share on Twitter</a></li>
+        <li><a href="mailto:?subject=Check this news&body=Check out this news: <%= encodeURIComponent('https://yourwebsite.com/details/' + news.id) %>">Share via Email</a></li>
+      </ul>
+    </div>
+  </div>
+  

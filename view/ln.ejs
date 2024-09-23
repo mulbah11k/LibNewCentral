@@ -1,0 +1,36 @@
+<div class="latest-news-section">
+    <h2>Latest News</h2>
+    
+    <div class="news-items">
+      <% news.forEach(function(item) { %>
+        <div class="news-item">
+          <!-- Replace the placeholder with the source -->
+          <h4 class="news-source"><%= item.source %></h4>
+          
+          <!-- Display the news headline -->
+          <h3 class="news-title"><%= item.title %></h3>
+  
+          <!-- Display news description or excerpt -->
+          <p class="news-description"><%= item.description %></p>
+  
+          <!-- "Read More" Button -->
+          <a href="/details/<%= item.id %>" class="read-more-button">Read More</a>
+  
+          <!-- Link to original news source -->
+          <p class="original-link"><a href="<%= item.original_link %>" target="_blank">Original Source</a></p>
+        </div>
+      <% }); %>
+    </div>
+  
+    <!-- Trending Now Section -->
+    <div class="trending-now-section">
+      <h3>Trending Now</h3>
+      <ul>
+        <% news.forEach(function(item) { %>
+          <li><a href="/details/<%= item.id %>"><%= item.title %></a></li>
+        <% }); %>
+      </ul>
+    </div>
+  </div>
+  
+  
