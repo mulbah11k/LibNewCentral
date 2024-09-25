@@ -282,3 +282,20 @@
   height: 10rem;
   object-fit: cover; /* Crops image without distortion */
 }
+.about-img img {
+  width: 100%;
+  max-width: 609px;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .responsive-image {
+      max-width: 400px; /* Resize image for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .responsive-image {
+      max-width: 300px; /* Further resize for mobile devices */
+  }
+}
