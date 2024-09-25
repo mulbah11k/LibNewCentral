@@ -20,12 +20,12 @@
                 <div class="weekly-caption">
                   <span class="color1"><%= item.source %></span>
                   <span class="color1 date_s"><%= new Date(item.releaseTime).toLocaleDateString() %></span>
-                  <span class="color1">
-                    <a href="/details/<%= item.id %>" class="read-more-button">Read More</a>
-                  </span>
                   <h4>
                     <a href="<%= item.link %>" target="_blank"><%= item.title %></a>
                   </h4>
+                  <span class="color1">
+                    <a href="/details/<%= item.id %>" id="details-btn">Details</a>
+                  </span>
                 </div>
               </div>
             <% }); %>

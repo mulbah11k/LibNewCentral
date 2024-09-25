@@ -1,0 +1,30 @@
+<div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+  <div class="whats-news-caption">
+    <div class="row">
+      <% news.forEach(item=> { %>
+        <% if (item.category_name.toLowerCase() ==='business' ) { %>
+          <div class="col-lg-6 col-md-6">
+            <div class="single-what-news mb-100">
+              <div class="what-img">
+                <img src="<%= item.imageUrl %>" alt="">
+              </div>
+              <div class="what-cap">
+                <span class="color1">
+                  <%= item.source %>
+                </span>
+                <h4>
+                  <a href="<%= item.link %>">
+                    <%= item.title %>
+                  </a>
+                </h4>
+                <span class="color1">
+                  <a href="/details/<%= item.id %>" id="details-btn">Details</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      <% }); %>
+    </div>
+  </div>
+</div>

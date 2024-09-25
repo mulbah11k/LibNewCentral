@@ -16,8 +16,10 @@ db.serialize(() => {
       link TEXT NOT NULL,
       imageUrl TEXT,
       source_id INTEGER,
+      category_id INTEGER,  -- Adding this to link news to its category
       releaseTime DATETIME,
-      UNIQUE(link) -- Prevent duplicate news
+      UNIQUE(link),         -- Prevent duplicate news
+      FOREIGN KEY (category_id) REFERENCES categories(id) -- Ensure the category exists
     )
   `);
   db.run(`
@@ -71,21 +73,26 @@ async function saveNewsToDatabase(news) {
           if (err) return reject(err);
           const sourceId = this.lastID;
 
-          // Insert news
-          db.run('INSERT OR IGNORE INTO news (title, description, link, imageUrl, source_id, releaseTime) VALUES (?, ?, ?, ?, ?, ?)',
-            [article.title, article.description, article.link, article.imageUrl, sourceId, article.releaseTime],
-            function(err) {
-              if (err) return reject(err);
-              console.log(`Inserted news with ID: ${this.lastID}`);
-            }
-          );
+          // Insert category
+          db.run('INSERT OR IGNORE INTO categories (category_name) VALUES (?)', [article.category], function(err) {
+            if (err) return reject(err);
+            const categoryId = this.lastID;
+
+            // Insert news with category and source
+            db.run('INSERT OR IGNORE INTO news (title, description, link, imageUrl, source_id, category_id, releaseTime) VALUES (?, ?, ?, ?, ?, ?, ?)',
+              [article.title, article.description, article.link, article.imageUrl, sourceId, categoryId, article.releaseTime],
+              function(err) {
+                if (err) return reject(err);
+                console.log(`Inserted news with ID: ${this.lastID}`);
+              }
+            );
+          });
         });
       });
       resolve();
     });
   });
 }
-
 // Function to get the latest news (for today)
 async function getLatestNews() {
   const today = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
@@ -185,5 +192,40 @@ async function getNewsWithLimit(limit = 50) {
     });
   });
 }
+// const getAllNews = async (limit = 8) => {
+//   // Query to get news with a dynamic limit along with their categories
+//   const query = `
+//       SELECT news.*, categories.category_name AS category_name
+//       FROM news
+//       JOIN categories ON news.category_id = categories.id
+//       LIMIT ?
+//   `;
+  
+//   return new Promise((resolve, reject) => {
+//     db.all(query, [limit], (err, rows) => {
+//       if (err) reject(err);
+//       resolve(rows);
+//     });
+//   });
+// };
+const getAllNews = async (limit = 8) => {
+  // Query to get news with a dynamic limit along with their categories and sources
+  const query = `
+      SELECT news.*, categories.category_name AS category_name, sources.name AS source_name
+      FROM news
+      JOIN categories ON news.category_id = categories.id
+      JOIN sources ON news.source_id = sources.id
+      LIMIT ?
+  `;
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, [limit], (err, rows) => {
+      if (err) reject(err);
+      resolve(rows);
+    });
+  });
+};
 
-module.exports = { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit};
+;
+
+module.exports = { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit, getAllNews};

@@ -5,10 +5,10 @@ const express = require("express");
 const path = require("path");
 const puppeteer = require('puppeteer');
 const cron = require('node-cron');
-const { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit } = require('./database');
+const { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit, getAllNews} = require('./database');
 //const db = require('./cronJobs'); // This imports the cron jobs
 const app = express();
-const port = 4000;
+const port = 5000;
 
 // Set up EJS as the template engine
 app.set('view engine', 'ejs');
@@ -26,6 +26,8 @@ app.get('/', async (req, res) => {
     const oneLatestNews = await getOneLatestNews();
     const randomLatestNews = await getRandomLatestNews(5);
     const limitedNews = await getNewsWithLimit(10); // Example limit of 50 news items
+    const allNews = await getAllNews(10); // Example limit of 50 news items
+
 
     // Render the main template with all the required data
     res.render('index', { 
@@ -33,7 +35,8 @@ app.get('/', async (req, res) => {
       randomNews, 
       oneLatestNews, 
       randomLatestNews, 
-      limitedNews 
+      limitedNews,
+      allNews 
     });
   } catch (err) {
     console.error(err);
@@ -57,9 +60,36 @@ app.get('/details', (req, res) => {
 });
 
 // Route for the category page
-app.get('/categori', (req, res) => {
-    res.render('categori');  // Render categori.ejs
+// app.get('/', (req, res) => {
+//     res.render('categori');  // Render categori.ejs
+// });
+app.get('/categori', async (req, res) => {
+  try {
+    // Fetch different types of news data
+    const latestNews = await getLatestNews();
+    const randomNews = await getRandomNews(10);
+    const oneLatestNews = await getOneLatestNews();
+    const randomLatestNews = await getRandomLatestNews(5);
+    const limitedNews = await getNewsWithLimit(10); // Example limit of 50 news items
+    const allNews = await getAllNews(10); // Example limit of 50 news items
+
+
+    // Render the main template with all the required data
+    res.render('categori', { 
+      latestNews, 
+      randomNews, 
+      oneLatestNews, 
+      randomLatestNews, 
+      limitedNews,
+      allNews 
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving news data");
+  }
 });
+
+
 
 // Route for the latest news page
 app.get('/latest_news', (req, res) => {
@@ -110,6 +140,157 @@ app.get('/contact', (req, res) => {
 //   await browser.close();
 //   return news;
 // }
+// Hotpepper Liberia news
+async function scrapeHotPepperLiberia() {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto('https://hotpepperliberia.com/', { waitUntil: 'networkidle2', timeout: 0 });
+
+  // Wait for the news articles to load
+  await page.waitForSelector('.bs-shortcode.bs-slider .slides .slide');
+
+  // Scrape news articles
+  const news = await page.evaluate(() => {
+    const articles = [];
+
+    // Get all news articles
+    const newsItems = document.querySelectorAll('.bs-shortcode.bs-slider .slides .slide');
+
+    newsItems.forEach(item => {
+      const title = item.querySelector('.title a')?.innerText;
+      const link = item.querySelector('.title a')?.href;
+      const releaseTimeElement = item.querySelector('time');
+      const releaseTime = releaseTimeElement ? releaseTimeElement.getAttribute('datetime') : null;
+
+      // Extract the image URL
+      const imageUrl = item.querySelector('.img-cont').style.backgroundImage
+        .replace('url(', '')
+        .replace(')', '')
+        .replace(/"/g, '');
+
+      const category = item.querySelector('.term-badges')?.innerText || 'Uncategorized';
+
+      if (title && link) {
+        articles.push({
+          title,
+          link,
+          releaseTime,
+          imageUrl,
+          category,
+          source: 'Hot Pepper Liberia'
+        });
+      }
+    });
+
+    return articles;
+  });
+
+  // Iterate over each article and scrape the description from the news details page
+  for (const article of news) {
+    const detailPage = await browser.newPage();
+    await detailPage.goto(article.link, { waitUntil: 'networkidle2', timeout: 0 });
+
+    // Scrape the description from the first <p> inside the news content
+    const description = await detailPage.evaluate(() => {
+      const firstParagraph = document.querySelector('.entry-content p');
+      return firstParagraph ? firstParagraph.innerText.trim() : 'No description available';
+    });
+
+    // Add the description to the article object
+    article.description = description;
+
+    // Close the details page
+    await detailPage.close();
+  }
+
+  await browser.close();
+  return news;
+}
+// indd
+
+async function scrapeIndependentProbe() {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+
+  // Block unnecessary resources like images and stylesheets
+  await page.setRequestInterception(true);
+  page.on('request', (req) => {
+    const resourceType = req.resourceType();
+    if (resourceType === 'image' || resourceType === 'stylesheet' || resourceType === 'font') {
+      req.abort();  // Block these resources
+    } else {
+      req.continue();  // Allow other resources
+    }
+  });
+
+  // Navigate to the site and wait for the content to load
+  await page.goto('https://independentprobe.com/', {
+    waitUntil: 'networkidle2',  // Wait until no more than 2 network connections are active
+    timeout: 60000              // Set timeout to 60 seconds
+  });
+
+  // Wait for the main content to appear
+  await page.waitForSelector('.jet-listing-grid__item');
+
+  // Get the current time when the news is scraped
+  const date = new Date().toISOString(); // ISO format: YYYY-MM-DDTHH:mm:ss.sss
+
+  // Scrape news items from the page
+  const news = await page.evaluate((date) => {
+    const articles = [];
+    const newsItems = document.querySelectorAll('.jet-listing-grid__item');
+    
+    newsItems.forEach(item => {
+      const titleElement = item.querySelector('.elementor-widget-heading a');
+      // const dateElement = item.querySelector('.elementor-icon-list-text');
+      const imgElement = item.querySelector('img');
+
+      // Extract the required fields
+      const title = titleElement ? titleElement.innerText : null;
+      const link = titleElement ? titleElement.href : null;
+      // const date = dateElement ? dateElement.innerText : null;
+      const imageUrl = imgElement ? imgElement.src : 'No image available';
+
+      if (title && link) {
+        articles.push({ 
+          title, 
+          link, 
+          imageUrl, 
+          source: 'Independent Probe', 
+          date // Add scrape time to each article
+        });
+      }
+    });
+
+    return articles;
+  }, date);  // Pass scrapeTime to page.evaluate
+
+  // Visit each news detail page to scrape additional information
+  for (let article of news) {
+    const detailPage = await browser.newPage();
+    await detailPage.goto(article.link, { waitUntil: 'networkidle2', timeout: 60000 });
+
+    // Scrape description and category from the detail page
+    const additionalInfo = await detailPage.evaluate(() => {
+      const descriptionElement = document.querySelector('.elementor-widget-container p');
+      const categoryElement = document.querySelector('.elementor-heading-title');
+      return {
+        description: descriptionElement ? descriptionElement.innerText.trim() : 'No description available',
+        category: categoryElement ? categoryElement.innerText.trim() : 'Uncategorized'
+      };
+    });
+
+    // Add description and category to the article
+    article.description = additionalInfo.description;
+    article.category = additionalInfo.category;
+    
+    await detailPage.close();
+  }
+
+  await browser.close();
+  return news;
+}
+
 
 // Function to scrape news from Liberian Observer
 async function scrapeLiberianObserver() {
@@ -117,7 +298,7 @@ async function scrapeLiberianObserver() {
   const page = await browser.newPage();
   await page.goto('https://www.liberianobserver.com/', { waitUntil: 'load', timeout: 0 });
   await page.waitForSelector('.row.equal-height.swapRow');
-  
+
   const news = await page.evaluate(() => {
     const articles = [];
 
@@ -125,24 +306,26 @@ async function scrapeLiberianObserver() {
     function scrapeNewsFromDiv(divId) {
       const div = document.querySelector(`#${divId}`);
       const newsItems = div.querySelectorAll('article');
-      
+
       newsItems.forEach(item => {
         const title = item.querySelector('h2 a')?.innerText || item.querySelector('h3 a')?.innerText;
         const link = item.querySelector('h2 a')?.href || item.querySelector('h3 a')?.href;
         const description = item.querySelector('p')?.innerText || '';
-        // const releaseTime = item.querySelector('time')?.innerText || item.querySelector('.jeg_meta_date')?.innerText || 'No date available';
         const releaseTimeElement = item.querySelector('time');
         const releaseTime = releaseTimeElement ? releaseTimeElement.getAttribute('datetime') : null;
-  
 
         // Check for the actual image in the secondary <img> tag or the base64 placeholder image
         const imageContainer = item.querySelector('.image');
-        const imageUrl = imageContainer?.querySelector('.tnt-blurred-image img')?.src || // Actual image URL
-                         imageContainer?.querySelector('img')?.src || // Base64 or other placeholder image
+        const imageUrl = imageContainer?.querySelector('.tnt-blurred-image img')?.src ||
+                         imageContainer?.querySelector('img')?.src || 
                          'No image available';
 
+        // Scrape the category from the <a> tag inside the .card-label-section div
+        const categoryElement = item.querySelector('.card-label-section a.tnt-section-tag');
+        const category = categoryElement ? categoryElement.innerText.trim() : 'Uncategorized';
+
         if (title && link) {
-          articles.push({ title, link, description, releaseTime, imageUrl, source: 'Liberian Observer' });
+          articles.push({ title, link, description, releaseTime, imageUrl, source: 'Liberian Observer', category });
         }
       });
     }
@@ -158,98 +341,14 @@ async function scrapeLiberianObserver() {
   return news;
 }
 
-// Function to scrape news from FrontPage Africa
-// async function scrapeFrontPageAfrica() {
-//   const browser = await puppeteer.launch({ headless: true });
-//   const page = await browser.newPage();
-//   await page.goto('https://frontpageafricaonline.com/', { waitUntil: 'networkidle2', timeout: 0 });
-//   await page.waitForSelector('.slick-slider .slick-track', { timeout: 60000 });
-//   const news = await page.evaluate(() => {
-//     const articles = [];
-//     const newsItems = document.querySelectorAll('.slick-slider .slick-track article');
-//     newsItems.forEach(item => {
-//       const titleElement = item.querySelector('h2.is-title.post-title a');
-//       const descriptionElement = item.querySelector('p');
-//       const linkElement = item.querySelector('a.image-link');
-//       const releaseTimeElement = item.querySelector('time');
-//       const imageSpanElement = item.querySelector('a.image-link span[data-bgsrc]');
-//       const title = titleElement ? titleElement.innerText : '';
-//       const link = linkElement ? linkElement.href : '';
-//       const description = descriptionElement ? descriptionElement.innerText : '';
-//       const releaseTime = releaseTimeElement ? releaseTimeElement.getAttribute('datetime') : '';
-//       let image = '';
-//       if (imageSpanElement) {
-//         const backgroundImage = imageSpanElement.style.backgroundImage;
-//         image = backgroundImage.replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '');
-//       }
-//       articles.push({ title, link, description, releaseTime, image, source: 'FrontPage Africa' });
-//     });
-//     return articles;
-//   });
-//   await browser.close();
-//   return news;
-// }
-// const puppeteer = require('puppeteer');
-
-// async function scrapeFrontPageAfrica() {
-//   const browser = await puppeteer.launch({ headless: true }); // Set headless to false if you want to see the browser
-//   const page = await browser.newPage();
-//   await page.goto('https://frontpageafricaonline.com/', { waitUntil: 'networkidle2', timeout: 0 });
-
-//   // Wait for the news items to load
-//   await page.waitForSelector('.slick-list .slick-track', { timeout: 60000 });
-
-//   // Evaluate the page content to extract the news articles
-//   const news = await page.evaluate(() => {
-//     const articles = [];
-
-//     // Select all news articles within the slick-slider container
-//     const newsItems = document.querySelectorAll('.slick-list .slick-track article');
-
-//     newsItems.forEach(item => {
-//       // Extract the title
-//       const titleElement = item.querySelector('h2.is-title.post-title a');
-//       const title = titleElement ? titleElement.innerText.trim() : 'No title';
-
-//       // Extract the link to the article
-//       const linkElement = item.querySelector('a.image-link');
-//       const link = linkElement ? linkElement.href : 'No link';
-
-//       // Extract the description
-//       const descriptionElement = item.querySelector('.excerpt p');
-//       const description = descriptionElement ? descriptionElement.innerText.trim() : 'No description';
-
-//       // Extract the release time
-//       const releaseTimeElement = item.querySelector('time');
-//       const releaseTime = releaseTimeElement ? releaseTimeElement.getAttribute('datetime') : 'No date';
-
-//       // Extract the image URL from the data-bgsrc attribute
-//       const imageSpanElement = item.querySelector('a.image-link span[data-bgsrc]');
-//       const imageUrl = imageSpanElement ? imageSpanElement.getAttribute('data-bgsrc') : 'No image available';
-
-//       // Push the extracted article data to the articles array
-//       articles.push({
-//         title,
-//         link,
-//         description,
-//         releaseTime,
-//         imageUrl,
-//         source: 'FrontPage Africa'
-//       });
-//     });
-
-//     return articles;
-//   });
-
-//   await browser.close();
-//   return news;
-// }
 
 // // Example usage
 // scrapeFrontPageAfrica().then(news => console.log(news)).catch(err => console.error(err));
 async function scrapeFrontPageAfrica() {
   const browser = await puppeteer.launch({ headless: true }); // Set headless to false if you want to see the browser
   const page = await browser.newPage();
+  
+  // Navigate to the FrontPage Africa website
   await page.goto('https://frontpageafricaonline.com/', { waitUntil: 'networkidle2', timeout: 0 });
 
   // Wait for the news items to load
@@ -283,6 +382,10 @@ async function scrapeFrontPageAfrica() {
       const imageSpanElement = item.querySelector('a.image-link span[data-bgsrc]');
       const imageUrl = imageSpanElement ? imageSpanElement.getAttribute('data-bgsrc') : null;
 
+      // Extract the category from the span element
+      const categoryElement = item.querySelector('.meta-item.post-cat a');
+      const category = categoryElement ? categoryElement.innerText.trim() : 'Uncategorized'; // Default to 'Uncategorized' if not found
+
       // Only push the article if it has title, image URL, and description
       if (title && imageUrl && description) {
         articles.push({
@@ -291,6 +394,7 @@ async function scrapeFrontPageAfrica() {
           description,
           releaseTime,
           imageUrl,
+          category, // Add the category to the article data
           source: 'FrontPage Africa'
         });
       }
@@ -303,6 +407,8 @@ async function scrapeFrontPageAfrica() {
   return news;
 }
 
+
+
 // Function to scrape all sources and save to the database
 
 
@@ -311,8 +417,11 @@ async function scrapeAndSaveNews() {
     //const newDawnNews = await scrapeTheNewDawnLiberia();
     const observerNews = await scrapeLiberianObserver();
     const frontPageNews = await scrapeFrontPageAfrica();
+    const hotPepperNews = await scrapeHotPepperLiberia() ;
+    const independentNews = await scrapeIndependentProbe();
 
-    const allNews = [...observerNews, ...frontPageNews]; //...newDawnNews,
+
+    const allNews = [...observerNews, ...frontPageNews, ...hotPepperNews, ...independentNews]; //...newDawnNews,
     await saveNewsToDatabase(allNews);
   } catch (error) {
     console.error('Error scraping and saving news:', error);

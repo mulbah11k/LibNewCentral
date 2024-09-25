@@ -4,12 +4,12 @@
       <div class="trend-top-cap">
         <span><%= news.source %></span>
         <span class="color1 date_s"><%= new Date(news.releaseTime).toLocaleDateString() %></span>
-        <span class="color1">
-            <a href="/details/<%= news.id %>" class="read-more-button">Read More</a>
-          </span>
         <h2>
           <a href="<%= news.link %>"><%= news.title %></a>
         </h2>
+        <span class="color1">
+          <a href="/details/<%= news.id %>" id="details-btn">Details</a>
+        </span>
       </div>
     </div>
   </div>

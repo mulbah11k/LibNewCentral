@@ -277,4 +277,8 @@
   height: 307px;
   object-fit: cover; /* Crops image without distortion */
 }
-
+.single-what-news .mb-100 .what-img img {
+  width: 20rem;
+  height: 10rem;
+  object-fit: cover; /* Crops image without distortion */
+}
