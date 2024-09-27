@@ -3,16 +3,17 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-         <title>News HTML-5 Template </title>
+         <title>LibNewsCenter </title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="manifest" href="site.webmanifest">
-		<link rel="shortcut icon" type="image/x-icon" href="mg/favicon.ico">
+		<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
 
 		<!-- CSS here -->
             <link rel="stylesheet" href="css/bootstrap.min.css">
             <link rel="stylesheet" href="css/owl.carousel.min.css">
+            <link rel="stylesheet" href="test.css">
 
             <link rel="stylesheet" href="css/ticker-style.css">
 
@@ -27,6 +28,142 @@
             <link rel="stylesheet" href="css/nice-select.css">
             <link rel="stylesheet" href="css/style.css">
             <link rel="stylesheet" href="css/responsive.css">
+            <style>
+                /* Scoped styles for the news-article component */
+                .news-article {
+                    width: 100%;
+                    padding: 20px;
+                    background: #ffffff;
+                    border-radius: 15px;
+                    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                }
+        
+                .news-article h1 {
+                    color: #333;
+                    font-size: 28px;
+                    margin-bottom: 15px;
+                }
+        
+                .news-article p {
+                    line-height: 1.6;
+                    margin: 8px 0;
+                }
+        
+                .icons {
+                    display: flex;
+                    justify-content: flex-start;
+                    margin-top: 20px;
+                }
+        
+                .icon {
+                    display: flex;
+                    align-items: center;
+                    margin-right: 20px;
+                    cursor: pointer;
+                    transition: color 0.3s ease;
+                }
+        
+                .icon img {
+                    width: 28px;
+                    height: 28px;
+                    margin-right: 8px;
+                }
+        
+                .icon span {
+                    font-size: 18px;
+                    color: #666;
+                }
+        
+                #like {
+                    color: #666;
+                }
+        
+                #like.clicked {
+                    color: red;
+                }
+        
+                .comments-section {
+                    margin-top: 40px;
+                    background: #f9f9f9;
+                    padding: 20px;
+                    border-radius: 10px;
+                }
+        
+                .comment {
+                    display: flex;
+                    margin-bottom: 20px;
+                    padding: 15px;
+                    background: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
+                }
+        
+                .user-profile {
+                    width: 50px;
+                    margin-right: 15px;
+                    text-align: center;
+                }
+        
+                .user-profile .avatar {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                }
+        
+                .user-profile .username {
+                    font-weight: bold;
+                    font-size: 0.9em;
+                    margin-top: 5px;
+                    color: #333;
+                }
+        
+                .comment-content {
+                    flex: 1;
+                    padding: 10px 15px;
+                    border-radius: 10px;
+                    background: #f7f7f7;
+                }
+        
+                .comment-content p {
+                    margin: 0;
+                }
+        
+                .comment-timestamp {
+                    display: block;
+                    color: #aaa;
+                    font-size: 0.9em;
+                    margin-top: 5px;
+                }
+        
+                .add-comment {
+                    margin-top: 30px;
+                }
+        
+                .add-comment textarea {
+                    width: 100%;
+                    height: 100px;
+                    padding: 10px;
+                    border-radius: 8px;
+                    border: 1px solid #ddd;
+                    margin-bottom: 10px;
+                    font-size: 1em;
+                }
+        
+                .add-comment button {
+                    background-color: #007bff;
+                    color: #fff;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                }
+        
+                .add-comment button:hover {
+                    background-color: #0056b3;
+                }
+            </style>
    </head>
 
    <body>
@@ -71,18 +208,70 @@
                             <!-- Trending Tittle -->
                             <div class="about-right mb-90">
                                 <div class="about-img">
-                                    <img src="img/trending/trending_top.jpg" alt="">
+                                    <img src="<%= newsItem.imageUrl %>" alt="">
                                 </div>
                                 <div class="section-tittle mb-30 pt-30">
-                                    <h3>Here come the moms in space</h3>
+                                    <h3><%= newsItem.title %></h3>
                                 </div>
                                 <div class="about-prea">
-                                    <p class="about-pera1 mb-25">Moms are like…buttons? Moms are like glue. Moms are like pizza crusts. Moms are the ones who make sure things happen—from birth to school lunch.</p>
-                                    <p class="about-pera1 mb-25">Moms are like…buttons? Moms are like glue. Moms are like pizza crusts. Moms are the ones who make sure things happen—from birth to school lunch.</p>
-                                 
-                                <div class="section-tittle">
-                                    <h3>Unordered list style?</h3>
-                                </div>
+                                    <p class="about-pera1 mb-25"><%= newsItem.description %></p>                                 
+                                    <div class="news-article">
+
+
+                                        <!-- Article Content -->
+                                        <!-- Icons Section -->
+                                        <div class="icons">
+                                            <!-- Like Icon -->
+                                            <div class="icon" id="like">
+                                                <img src="https://img.icons8.com/material-outlined/24/000000/like--v1.png"
+                                                    alt="Like Icon">
+                                                <span id="likeCount">0</span>
+                                            </div>
+
+                                            <!-- View Icon -->
+                                            <div class="icon" id="view">
+                                                <img src="https://img.icons8.com/material-outlined/24/000000/visible.png"
+                                                    alt="View Icon">
+                                                <span id="viewCount">0</span>
+                                            </div>
+
+                                            <!-- PDF Download Icon -->
+                                            <div class="icon" id="download">
+                                                <img src="https://img.icons8.com/material-outlined/24/000000/download.png"
+                                                    alt="Download PDF">
+                                                <span>Download PDF</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Comment Section -->
+                                        <div class="comments-section">
+                                            <h2>Comments</h2>
+                                            <div id="comments-container" class="comment-container">
+                                                <!-- Sample Comment with User Profile -->
+                                                <div class="comment">
+                                                    <div class="user-profile">
+                                                        <img src="https://img.icons8.com/ios-filled/50/000000/user-male-circle.png"
+                                                            alt="User Avatar" class="avatar">
+                                                        <span class="username">John Doe</span>
+                                                    </div>
+                                                    <div class="comment-content">
+                                                        <p>This is a sample comment on the news article. Great post!</p>
+                                                        <span class="comment-timestamp">2 hours ago</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Comment Input Box -->
+                                            <div class="add-comment">
+                                                <textarea id="comment-box"
+                                                    placeholder="Write your comment here..."></textarea>
+                                                <button onclick="addComment()">Post Comment</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- JavaScript Logic -->
+
+                                    </div>
                                 <div class="social-share pt-30">
                                     <div class="section-tittle">
                                         <h3 class="mr-20">Share:</h3>
@@ -193,5 +382,53 @@
      <!-- JS here -->
      <!-- The Javascript is in the file path that is below-->
      <%- include('partials/js_link.ejs') %>
+     <script>
+        // Sample script to handle like and view counts
+        let likeCount = 0;
+        let viewCount = 0;
+
+        document.getElementById('like').addEventListener('click', function () {
+            if (this.classList.contains('clicked')) {
+                likeCount--;
+                this.classList.remove('clicked');
+                this.style.color = '#666'; // Reset to default color
+            } else {
+                likeCount++;
+                this.classList.add('clicked');
+                this.style.color = 'red'; // Change color to red
+            }
+            document.getElementById('likeCount').innerText = likeCount;
+        });
+
+        // Increment view count on page load
+        window.onload = function () {
+            viewCount++;
+            document.getElementById('viewCount').innerText = viewCount;
+        };
+
+        // Function to add a comment with user profile details
+        function addComment() {
+            const commentBox = document.getElementById('comment-box');
+            const comment = commentBox.value.trim();
+
+            if (comment !== "") {
+                const commentContainer = document.getElementById('comments-container');
+                const commentElement = document.createElement('div');
+                commentElement.classList.add('comment');
+                commentElement.innerHTML = `
+                <div class="user-profile">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/user-male-circle.png" alt="User Avatar" class="avatar">
+                    <span class="username">Jane Doe</span>
+                </div>
+                <div class="comment-content">
+                    <p>${comment}</p>
+                    <span class="comment-timestamp">Just now</span>
+                </div>
+            `;
+                commentContainer.appendChild(commentElement);
+                commentBox.value = "";  // Clear the comment box
+            }
+        }
+    </script>
     </body>
 </html>

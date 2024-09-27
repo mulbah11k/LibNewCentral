@@ -161,6 +161,26 @@ async function getRandomLatestNews(limit = 5) {
     });
   });
 }
+
+async function getNewsById(id) {
+  const query = `
+      SELECT news.*, categories.category_name AS category_name, sources.name AS source_name
+      FROM news
+      JOIN categories ON news.category_id = categories.id
+      JOIN sources ON news.source_id = sources.id
+      WHERE news.id = ?
+  `;
+
+  const newsItem = await new Promise((resolve, reject) => {
+      db.get(query, [id], (err, row) => {
+          if (err) reject(err);
+          resolve(row);
+      });
+  });
+
+  return newsItem;
+}
+
 // Function to get all news
 // async function getAllNews() {
 //   return new Promise((resolve, reject) => {
@@ -228,4 +248,4 @@ const getAllNews = async (limit = 8) => {
 
 ;
 
-module.exports = { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit, getAllNews};
+module.exports = { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit, getAllNews, getNewsById};

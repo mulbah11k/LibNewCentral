@@ -5,10 +5,10 @@ const express = require("express");
 const path = require("path");
 const puppeteer = require('puppeteer');
 const cron = require('node-cron');
-const { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit, getAllNews} = require('./database');
+const { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit, getAllNews, getNewsById} = require('./database');
 //const db = require('./cronJobs'); // This imports the cron jobs
 const app = express();
-const port = 3000;
+const port = 2000;
 
 // Set up EJS as the template engine
 app.set('view engine', 'ejs');
@@ -55,9 +55,19 @@ app.get('/blog', (req, res) => {
 });
 
 // Route for the details page
-app.get('/details', (req, res) => {
-    res.render('details');  // Render details.ejs
+app.get('/details/:id', async (req, res) => {
+  const newsId = req.params.id;
+  
+  // Replace this with your actual function to retrieve the news item by ID
+  const newsItem = await getNewsById(newsId);  
+
+  if (newsItem) {
+      res.render('details', { newsItem });  // Pass the news item to the EJS template
+  } else {
+      res.status(404).send('News not found');  // Handle case if no news item is found
+  }
 });
+
 
 // Route for the category page
 // app.get('/', (req, res) => {
@@ -89,6 +99,15 @@ app.get('/categori', async (req, res) => {
   }
 });
 
+app.get('/scrape-news', async (req, res) => {
+  try {
+    await scrapeAndSaveNews();
+    res.send('News scraping successful');
+  } catch (error) {
+    console.error('Error occurred while scraping news:', error);
+    res.status(500).send('Error occurred while scraping news');
+  }
+});
 
 
 // Route for the latest news page
