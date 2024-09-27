@@ -15,7 +15,12 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'view'));
 
 // Serve static files (CSS, JS, images) from the public directory
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
+
+app.use('/details', express.static('public/details'));
+
+
 
 // Route for the index page
 app.get('/', async (req, res) => {
@@ -70,9 +75,6 @@ app.get('/details/:id', async (req, res) => {
 
 
 // Route for the category page
-// app.get('/', (req, res) => {
-//     res.render('categori');  // Render categori.ejs
-// });
 app.get('/categori', async (req, res) => {
   try {
     // Fetch different types of news data
