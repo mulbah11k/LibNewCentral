@@ -8,26 +8,26 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="manifest" href="site.webmanifest">
-		<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+		<link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
 
 		<!-- CSS here -->
-            <link rel="stylesheet" href="/details/css/bootstrap.min.css">
-            <link rel="stylesheet" href="/details/css/owl.carousel.min.css">
-            <link rel="stylesheet" href="/details/css/bootstrap.min.css">
+            <link rel="stylesheet" href="/css/bootstrap.min.css">
+            <link rel="stylesheet" href="/css/owl.carousel.min.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-            <link rel="stylesheet" href="/details/css/ticker-style.css">
+            <link rel="stylesheet" href="/css/ticker-style.css">
 
-            <link rel="stylesheet" href="/details/css/flaticon.css">
+            <link rel="stylesheet" href="/css/flaticon.css">
 
-            <link rel="stylesheet" href="/details/css/slicknav.css">
-            <link rel="stylesheet" href="/details/css/animate.min.css">
-            <link rel="stylesheet" href="/details/css/magnific-popup.css">
-            <link rel="stylesheet" href="css/fontawesome-all.min.css">
-            <link rel="stylesheet" href="css/themify-icons.css">
-            <link rel="stylesheet" href="css/slick.css">
-            <link rel="stylesheet" href="css/nice-select.css">
-            <link rel="stylesheet" href="css/style.css">
-            <link rel="stylesheet" href="css/responsive.css">
+            <link rel="stylesheet" href="/css/slicknav.css">
+            <link rel="stylesheet" href="/css/animate.min.css">
+            <link rel="stylesheet" href="/css/magnific-popup.css">
+            <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+            <link rel="stylesheet" href="/css/themify-icons.css">
+            <link rel="stylesheet" href="/css/slick.css">
+            <link rel="stylesheet" href="/css/nice-select.css">
+            <link rel="stylesheet" href="/css/style.css">
+            <link rel="stylesheet" href="/css/responsive.css">
             <style>
                 /* Scoped styles for the news-article component */
                 .news-article {
@@ -163,6 +163,31 @@
                 .add-comment button:hover {
                     background-color: #0056b3;
                 }
+
+                ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  display: inline;
+  margin-right: 15px;
+}
+
+ul li a {
+  text-decoration: none;
+  color: #000;
+  font-size: 18px;
+}
+
+ul li a:hover {
+  color: #007bff;
+}
+
+ul li a i {
+  margin-right: 5px;
+}
+
             </style>
    </head>
 
@@ -276,16 +301,29 @@
                                     <div class="section-tittle">
                                         <h3 class="mr-20">Share:</h3>
                                         <ul>
-                                            <li><a href="#"><img src="img/news/icon-ins.png" alt=""></a></li>
-                                            <li><a href="#"><img src="img/news/icon-fb.png" alt=""></a></li>
-                                            <li><a href="#"><img src="img/news/icon-tw.png" alt=""></a></li>
-                                            <li><a href="#"><img src="img/news/icon-yo.png" alt=""></a></li>
-                                        </ul>
+                                            <li>
+                                              <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent('https://yourwebsite.com/details/' + newsItem.id) %>" target="_blank">
+                                                <i class="fa fa-facebook" aria-hidden="true"></i> Share on Facebook
+                                              </a>
+                                            </li>
+                                            <li>
+                                              <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://yourwebsite.com/details/' + newsItem.id) %>" target="_blank">
+                                                <i class="fa fa-twitter" aria-hidden="true"></i> Share on Twitter
+                                              </a>
+                                            </li>
+                                            <li>
+                                              <a href="mailto:?subject=Check this news&body=Check out this news: <%= encodeURIComponent('https://yourwebsite.com/details/' + newsItem.id) %>">
+                                                <i class="fa fa-envelope" aria-hidden="true"></i> Share via Email
+                                              </a>
+                                            </li>
+                                          </ul>
+                                          
+                                        
                                     </div>
                                 </div>
                             </div>
                             <!-- From -->
-                            <div class="row">
+                            <!-- <div class="row">
                                 <div class="col-lg-8">
                                     <form class="form-contact contact_form mb-80" action="contact_process.php" method="post" id="contactForm" novalidate="novalidate">
                                         <div class="row">
@@ -315,7 +353,7 @@
                                         </div>
                                     </form>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="col-lg-4">
                             <!-- Section Tittle -->
@@ -327,7 +365,7 @@
                                 <div class="single-box">
                                     <div class="follow-us d-flex align-items-center">
                                         <div class="follow-social">
-                                            <a href="#"><img src="img/news/icon-fb.png" alt=""></a>
+                                            <a href="#"><img src="/img/news/icon-fb.png" alt=""></a>
                                         </div>
                                         <div class="follow-count">  
                                             <span>8,045</span>
@@ -336,7 +374,7 @@
                                     </div> 
                                     <div class="follow-us d-flex align-items-center">
                                         <div class="follow-social">
-                                            <a href="#"><img src="img/news/icon-tw.png" alt=""></a>
+                                            <a href="#"><img src="/img/news/icon-tw.png" alt=""></a>
                                         </div>
                                         <div class="follow-count">
                                             <span>8,045</span>
@@ -345,7 +383,7 @@
                                     </div>
                                         <div class="follow-us d-flex align-items-center">
                                         <div class="follow-social">
-                                            <a href="#"><img src="img/news/icon-ins.png" alt=""></a>
+                                            <a href="#"><img src="/img/news/icon-ins.png" alt=""></a>
                                         </div>
                                         <div class="follow-count">
                                             <span>8,045</span>
@@ -354,7 +392,7 @@
                                     </div>
                                     <div class="follow-us d-flex align-items-center">
                                         <div class="follow-social">
-                                            <a href="#"><img src="img/news/icon-yo.png" alt=""></a>
+                                            <a href="#"><img src="/img/news/icon-yo.png" alt=""></a>
                                         </div>
                                         <div class="follow-count">
                                             <span>8,045</span>
@@ -365,7 +403,7 @@
                             </div>
                             <!-- New Poster -->
                             <div class="news-poster d-none d-lg-block">
-                                <img src="img/news/news_card.jpg" alt="">
+                                <img src="/img/news/news_card.jpg" alt="">
                             </div>
                         </div>
                    </div>
