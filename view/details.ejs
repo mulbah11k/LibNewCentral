@@ -1,198 +1,249 @@
 <!doctype html>
 <html class="no-js" lang="zxx">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-         <title>LibNewsCenter </title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="manifest" href="site.webmanifest">
-		<link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>LibNewsCenter </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<!-- CSS here -->
-            <link rel="stylesheet" href="/css/bootstrap.min.css">
-            <link rel="stylesheet" href="/css/owl.carousel.min.css">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
 
-            <link rel="stylesheet" href="/css/ticker-style.css">
+    <!-- CSS here -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-            <link rel="stylesheet" href="/css/flaticon.css">
+    <link rel="stylesheet" href="/css/ticker-style.css">
 
-            <link rel="stylesheet" href="/css/slicknav.css">
-            <link rel="stylesheet" href="/css/animate.min.css">
-            <link rel="stylesheet" href="/css/magnific-popup.css">
-            <link rel="stylesheet" href="/css/fontawesome-all.min.css">
-            <link rel="stylesheet" href="/css/themify-icons.css">
-            <link rel="stylesheet" href="/css/slick.css">
-            <link rel="stylesheet" href="/css/nice-select.css">
-            <link rel="stylesheet" href="/css/style.css">
-            <link rel="stylesheet" href="/css/responsive.css">
-            <style>
-                /* Scoped styles for the news-article component */
-                .news-article {
-                    width: 100%;
-                    padding: 20px;
-                    background: #ffffff;
-                    border-radius: 15px;
-                    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                }
-        
-                .news-article h1 {
-                    color: #333;
-                    font-size: 28px;
-                    margin-bottom: 15px;
-                }
-        
-                .news-article p {
-                    line-height: 1.6;
-                    margin: 8px 0;
-                }
-        
-                .icons {
-                    display: flex;
-                    justify-content: flex-start;
-                    margin-top: 20px;
-                }
-        
-                .icon {
-                    display: flex;
-                    align-items: center;
-                    margin-right: 20px;
-                    cursor: pointer;
-                    transition: color 0.3s ease;
-                }
-        
-                .icon img {
-                    width: 28px;
-                    height: 28px;
-                    margin-right: 8px;
-                }
-        
-                .icon span {
-                    font-size: 18px;
-                    color: #666;
-                }
-        
-                #like {
-                    color: #666;
-                }
-        
-                #like.clicked {
-                    color: red;
-                }
-        
-                .comments-section {
-                    margin-top: 40px;
-                    background: #f9f9f9;
-                    padding: 20px;
-                    border-radius: 10px;
-                }
-        
-                .comment {
-                    display: flex;
-                    margin-bottom: 20px;
-                    padding: 15px;
-                    background: #ffffff;
-                    border-radius: 10px;
-                    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
-                }
-        
-                .user-profile {
-                    width: 50px;
-                    margin-right: 15px;
-                    text-align: center;
-                }
-        
-                .user-profile .avatar {
-                    width: 50px;
-                    height: 50px;
-                    border-radius: 50%;
-                }
-        
-                .user-profile .username {
-                    font-weight: bold;
-                    font-size: 0.9em;
-                    margin-top: 5px;
-                    color: #333;
-                }
-        
-                .comment-content {
-                    flex: 1;
-                    padding: 10px 15px;
-                    border-radius: 10px;
-                    background: #f7f7f7;
-                }
-        
-                .comment-content p {
-                    margin: 0;
-                }
-        
-                .comment-timestamp {
-                    display: block;
-                    color: #aaa;
-                    font-size: 0.9em;
-                    margin-top: 5px;
-                }
-        
-                .add-comment {
-                    margin-top: 30px;
-                }
-        
-                .add-comment textarea {
-                    width: 100%;
-                    height: 100px;
-                    padding: 10px;
-                    border-radius: 8px;
-                    border: 1px solid #ddd;
-                    margin-bottom: 10px;
-                    font-size: 1em;
-                }
-        
-                .add-comment button {
-                    background-color: #007bff;
-                    color: #fff;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    transition: background-color 0.3s ease;
-                }
-        
-                .add-comment button:hover {
-                    background-color: #0056b3;
-                }
+    <link rel="stylesheet" href="/css/flaticon.css">
 
-                ul {
-  list-style-type: none;
-  padding: 0;
-}
+    <link rel="stylesheet" href="/css/slicknav.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <style>
+        /* Scoped styles for the news-article component */
+        .news-article {
+            width: 100%;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-ul li {
-  display: inline;
-  margin-right: 15px;
-}
+        .news-article h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
 
-ul li a {
-  text-decoration: none;
-  color: #000;
-  font-size: 18px;
-}
+        .news-article p {
+            line-height: 1.6;
+            margin: 8px 0;
+        }
 
-ul li a:hover {
-  color: #007bff;
-}
+        .icons {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 20px;
+        }
 
-ul li a i {
-  margin-right: 5px;
-}
+        .icon {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
 
-            </style>
-   </head>
+        .icon img {
+            width: 28px;
+            height: 28px;
+            margin-right: 8px;
+        }
 
-   <body>
-       
+        .icon span {
+            font-size: 18px;
+            color: #666;
+        }
+
+        #like {
+            color: #666;
+        }
+
+        #like.clicked {
+            color: red;
+        }
+
+        .comments-section {
+            margin-top: 40px;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .comment {
+            display: flex;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-profile {
+            width: 50px;
+            margin-right: 15px;
+            text-align: center;
+        }
+
+        .user-profile .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .user-profile .username {
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-top: 5px;
+            color: #333;
+        }
+
+        .comment-content {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 10px;
+            background: #f7f7f7;
+        }
+
+        .comment-content p {
+            margin: 0;
+        }
+
+        .comment-timestamp {
+            display: block;
+            color: #aaa;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .add-comment {
+            margin-top: 30px;
+        }
+
+        .add-comment textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .add-comment button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-comment button:hover {
+            background-color: #0056b3;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            display: inline;
+            margin-right: 15px;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: #000;
+            font-size: 18px;
+        }
+
+        ul li a:hover {
+            color: #007bff;
+        }
+
+        ul li a i {
+            margin-right: 5px;
+        }
+
+
+        /* Container to center the button */
+        .view-more-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            /* Add space around the button */
+        }
+
+        /* Link Styling */
+        .view-more-container a {
+            text-decoration: none;
+            /* Remove underline from link */
+        }
+
+        /* View More Button Styles */
+        .view-more-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #4CAF50, #00C853);
+            color: #fff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            /* Rounded corners */
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* Add subtle shadow */
+            transition: all 0.3s ease;
+            /* Smooth transition effect */
+        }
+
+        /* Hover effect */
+        .view-more-btn:hover {
+            background: linear-gradient(45deg, #00C853, #4CAF50);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            /* Increase shadow on hover */
+            transform: translateY(-2px);
+            /* Lift button */
+        }
+
+        /* Optional: Add active effect */
+        .view-more-btn:active {
+            transform: translateY(0);
+            /* Remove lift effect */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* Restore original shadow */
+        }
+    </style>
+</head>
+
+<body>
+
     <!-- Preloader Start -->
     <div id="preloader-active">
         <div class="preloader d-flex align-items-center justify-content-center">
@@ -205,12 +256,12 @@ ul li a i {
         </div>
     </div>
     <!-- Preloader Start -->
-         <!-- The header is in the file path that is below-->
-         <%- include('partials/header.ejs') %>
-    <main>
-        <!-- About US Start -->
-        <div class="about-area">
-            <div class="container">
+    <!-- The header is in the file path that is below-->
+    <%- include('partials/header.ejs') %>
+        <main>
+            <!-- About US Start -->
+            <div class="about-area">
+                <div class="container">
                     <!-- Hot Aimated News Tittle-->
                     <div class="row">
                         <div class="col-lg-12">
@@ -219,16 +270,18 @@ ul li a i {
                                 <!-- <p>Rem ipsum dolor sit amet, consectetur adipisicing elit.</p> -->
                                 <div class="trending-animated">
                                     <ul id="js-news" class="js-hidden">
-                                        <li class="news-item">Bangladesh dolor sit amet, consectetur adipisicing elit.</li>
+                                        <li class="news-item">Bangladesh dolor sit amet, consectetur adipisicing elit.
+                                        </li>
                                         <li class="news-item">Spondon IT sit amet, consectetur.......</li>
-                                        <li class="news-item">Rem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                                        <li class="news-item">Rem ipsum dolor sit amet, consectetur adipisicing elit.
+                                        </li>
                                     </ul>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
-                   <div class="row">
+                    <div class="row">
                         <div class="col-lg-8">
                             <!-- Trending Tittle -->
                             <div class="about-right mb-90">
@@ -236,12 +289,21 @@ ul li a i {
                                     <img src="<%= newsItem.imageUrl %>" alt="">
                                 </div>
                                 <div class="section-tittle mb-30 pt-30">
-                                    <h3><%= newsItem.title %></h3>
+                                    <h3>
+                                        <%= newsItem.title %>
+                                    </h3>
                                 </div>
                                 <div class="about-prea">
-                                    <p class="about-pera1 mb-25"><%= newsItem.description %></p>                                 
-                                    <div class="news-article">
+                                    <p class="about-pera1 mb-25">
+                                        <%= newsItem.description %>
+                                    </p>
+                                    <div class="view-more-container">
+                                        <a href="<%= newsItem.link %>" class="view-more-btn">
+                                            View More
+                                        </a>
+                                    </div>
 
+                                    <div class="news-article">
 
                                         <!-- Article Content -->
                                         <!-- Icons Section -->
@@ -297,33 +359,39 @@ ul li a i {
                                         <!-- JavaScript Logic -->
 
                                     </div>
-                                <div class="social-share pt-30">
-                                    <div class="section-tittle">
-                                        <h3 class="mr-20">Share:</h3>
-                                        <ul>
-                                            <li>
-                                              <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent('https://yourwebsite.com/details/' + newsItem.id) %>" target="_blank">
-                                                <i class="fa fa-facebook" aria-hidden="true"></i> Share on Facebook
-                                              </a>
-                                            </li>
-                                            <li>
-                                              <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://yourwebsite.com/details/' + newsItem.id) %>" target="_blank">
-                                                <i class="fa fa-twitter" aria-hidden="true"></i> Share on Twitter
-                                              </a>
-                                            </li>
-                                            <li>
-                                              <a href="mailto:?subject=Check this news&body=Check out this news: <%= encodeURIComponent('https://yourwebsite.com/details/' + newsItem.id) %>">
-                                                <i class="fa fa-envelope" aria-hidden="true"></i> Share via Email
-                                              </a>
-                                            </li>
-                                          </ul>
-                                          
-                                        
+                                    <div class="social-share pt-30">
+                                        <div class="section-tittle">
+                                            <h3 class="mr-20">Share:</h3>
+                                            <ul>
+                                                <li>
+                                                    <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent('https://yourwebsite.com/details/' + newsItem.id) %>"
+                                                        target="_blank">
+                                                        <i class="fa fa-facebook" aria-hidden="true"></i> Share on
+                                                        Facebook
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://yourwebsite.com/details/' + newsItem.id) %>"
+                                                        target="_blank">
+                                                        <i class="fa fa-twitter" aria-hidden="true"></i> Share on
+                                                        Twitter
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a
+                                                        href="mailto:?subject=Check this news&body=Check out this news: <%= encodeURIComponent('https://yourwebsite.com/details/' + newsItem.id) %>">
+                                                        <i class="fa fa-envelope" aria-hidden="true"></i> Share via
+                                                        Email
+                                                    </a>
+                                                </li>
+                                            </ul>
+
+
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- From -->
-                            <!-- <div class="row">
+                                <!-- From -->
+                                <!-- <div class="row">
                                 <div class="col-lg-8">
                                     <form class="form-contact contact_form mb-80" action="contact_process.php" method="post" id="contactForm" novalidate="novalidate">
                                         <div class="row">
@@ -354,106 +422,106 @@ ul li a i {
                                     </form>
                                 </div>
                             </div> -->
-                        </div>
-                        <div class="col-lg-4">
-                            <!-- Section Tittle -->
-                            <div class="section-tittle mb-40">
-                                <h3>Follow Us</h3>
                             </div>
-                            <!-- Flow Socail -->
-                            <div class="single-follow mb-45">
-                                <div class="single-box">
-                                    <div class="follow-us d-flex align-items-center">
-                                        <div class="follow-social">
-                                            <a href="#"><img src="/img/news/icon-fb.png" alt=""></a>
-                                        </div>
-                                        <div class="follow-count">  
-                                            <span>8,045</span>
-                                            <p>Fans</p>
-                                        </div>
-                                    </div> 
-                                    <div class="follow-us d-flex align-items-center">
-                                        <div class="follow-social">
-                                            <a href="#"><img src="/img/news/icon-tw.png" alt=""></a>
-                                        </div>
-                                        <div class="follow-count">
-                                            <span>8,045</span>
-                                            <p>Fans</p>
-                                        </div>
-                                    </div>
+                            <div class="col-lg-4">
+                                <!-- Section Tittle -->
+                                <div class="section-tittle mb-40">
+                                    <h3>Follow Us</h3>
+                                </div>
+                                <!-- Flow Socail -->
+                                <div class="single-follow mb-45">
+                                    <div class="single-box">
                                         <div class="follow-us d-flex align-items-center">
-                                        <div class="follow-social">
-                                            <a href="#"><img src="/img/news/icon-ins.png" alt=""></a>
+                                            <div class="follow-social">
+                                                <a href="#"><img src="/img/news/icon-fb.png" alt=""></a>
+                                            </div>
+                                            <div class="follow-count">
+                                                <span>8,045</span>
+                                                <p>Fans</p>
+                                            </div>
                                         </div>
-                                        <div class="follow-count">
-                                            <span>8,045</span>
-                                            <p>Fans</p>
+                                        <div class="follow-us d-flex align-items-center">
+                                            <div class="follow-social">
+                                                <a href="#"><img src="/img/news/icon-tw.png" alt=""></a>
+                                            </div>
+                                            <div class="follow-count">
+                                                <span>8,045</span>
+                                                <p>Fans</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="follow-us d-flex align-items-center">
-                                        <div class="follow-social">
-                                            <a href="#"><img src="/img/news/icon-yo.png" alt=""></a>
+                                        <div class="follow-us d-flex align-items-center">
+                                            <div class="follow-social">
+                                                <a href="#"><img src="/img/news/icon-ins.png" alt=""></a>
+                                            </div>
+                                            <div class="follow-count">
+                                                <span>8,045</span>
+                                                <p>Fans</p>
+                                            </div>
                                         </div>
-                                        <div class="follow-count">
-                                            <span>8,045</span>
-                                            <p>Fans</p>
+                                        <div class="follow-us d-flex align-items-center">
+                                            <div class="follow-social">
+                                                <a href="#"><img src="/img/news/icon-yo.png" alt=""></a>
+                                            </div>
+                                            <div class="follow-count">
+                                                <span>8,045</span>
+                                                <p>Fans</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- New Poster -->
-                            <div class="news-poster d-none d-lg-block">
-                                <img src="/img/news/news_card.jpg" alt="">
+                                <!-- New Poster -->
+                                <div class="news-poster d-none d-lg-block">
+                                    <img src="/img/news/news_card.jpg" alt="">
+                                </div>
                             </div>
                         </div>
-                   </div>
-            </div>
-        </div>
-        <!-- About US End -->
-    </main>
-          <!-- Footer Start-->
-         <!-- The footer is in the file path that is below-->
-         <%- include('partials/footer.ejs') %>
-         <!-- Footer End-->
-     
- 
-     <!-- JS here -->
-     <!-- The Javascript is in the file path that is below-->
-     <%- include('partials/js_link.ejs') %>
-     <script>
-        // Sample script to handle like and view counts
-        let likeCount = 0;
-        let viewCount = 0;
+                    </div>
+                </div>
+                <!-- About US End -->
+        </main>
+        <!-- Footer Start-->
+        <!-- The footer is in the file path that is below-->
+        <%- include('partials/footer.ejs') %>
+            <!-- Footer End-->
 
-        document.getElementById('like').addEventListener('click', function () {
-            if (this.classList.contains('clicked')) {
-                likeCount--;
-                this.classList.remove('clicked');
-                this.style.color = '#666'; // Reset to default color
-            } else {
-                likeCount++;
-                this.classList.add('clicked');
-                this.style.color = 'red'; // Change color to red
-            }
-            document.getElementById('likeCount').innerText = likeCount;
-        });
 
-        // Increment view count on page load
-        window.onload = function () {
-            viewCount++;
-            document.getElementById('viewCount').innerText = viewCount;
-        };
+            <!-- JS here -->
+            <!-- The Javascript is in the file path that is below-->
+            <%- include('partials/js_link.ejs') %>
+                <script>
+                    // Sample script to handle like and view counts
+                    let likeCount = 0;
+                    let viewCount = 0;
 
-        // Function to add a comment with user profile details
-        function addComment() {
-            const commentBox = document.getElementById('comment-box');
-            const comment = commentBox.value.trim();
+                    document.getElementById('like').addEventListener('click', function () {
+                        if (this.classList.contains('clicked')) {
+                            likeCount--;
+                            this.classList.remove('clicked');
+                            this.style.color = '#666'; // Reset to default color
+                        } else {
+                            likeCount++;
+                            this.classList.add('clicked');
+                            this.style.color = 'red'; // Change color to red
+                        }
+                        document.getElementById('likeCount').innerText = likeCount;
+                    });
 
-            if (comment !== "") {
-                const commentContainer = document.getElementById('comments-container');
-                const commentElement = document.createElement('div');
-                commentElement.classList.add('comment');
-                commentElement.innerHTML = `
+                    // Increment view count on page load
+                    window.onload = function () {
+                        viewCount++;
+                        document.getElementById('viewCount').innerText = viewCount;
+                    };
+
+                    // Function to add a comment with user profile details
+                    function addComment() {
+                        const commentBox = document.getElementById('comment-box');
+                        const comment = commentBox.value.trim();
+
+                        if (comment !== "") {
+                            const commentContainer = document.getElementById('comments-container');
+                            const commentElement = document.createElement('div');
+                            commentElement.classList.add('comment');
+                            commentElement.innerHTML = `
                 <div class="user-profile">
                     <img src="https://img.icons8.com/ios-filled/50/000000/user-male-circle.png" alt="User Avatar" class="avatar">
                     <span class="username">Jane Doe</span>
@@ -463,10 +531,11 @@ ul li a i {
                     <span class="comment-timestamp">Just now</span>
                 </div>
             `;
-                commentContainer.appendChild(commentElement);
-                commentBox.value = "";  // Clear the comment box
-            }
-        }
-    </script>
-    </body>
+                            commentContainer.appendChild(commentElement);
+                            commentBox.value = "";  // Clear the comment box
+                        }
+                    }
+                </script>
+</body>
+
 </html>
