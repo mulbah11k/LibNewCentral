@@ -41,13 +41,13 @@
             <div class="row">
               <div class="col-lg-8">
                 <!-- Trending Top -->
-                <%- include('partials/onelatestnews', { news: oneLatestNews }) %>
+                <%- include('partials/onelatestnews', { news: oneSimilarNews }) %>
                 <!-- Trending Bottom -->
-                <%- include('partials/trending-bottom', { news: latestNews }) %>
+                <%- ihbnclude('partials/trending-bottom', { news: latestNews }) %>
 
               </div>
               <!-- Riht content -->
-              <%- include('partials/rightsidelatest', { news: randomLatestNews }) %>
+              <%- include('partials/rightsidelatest', { news: latestNews }) %>
             </div>
           </div>
         </div>
@@ -94,21 +94,21 @@
                     <%- include('partials/category_all', { news: allNews }) %>
 
                     <!-- Card two -->
-                    <%- include('partials/category_education', { news: allNews }) %>
+                    <%- include('partials/category_education', { news: educationNews }) %>
 
                     <!-- Card three -->
-                    <%- include('partials/category_business', { news: allNews }) %>
+                    <%- include('partials/category_business', { news: businessNews }) %>
 
                     <!-- card fure -->
-                    <%- include('partials/category_politic', { news: allNews }) %>
+                    <%- include('partials/category_politic', { news: politicsNews }) %>
 
 
                     <!-- card Five -->
-                    <%- include('partials/category_sport', { news: allNews }) %>
+                    <%- include('partials/category_sport', { news: sportsNews }) %>
 
 
                     <!-- card Six -->
-                    <%- include('partials/category_others', { news: allNews }) %>
+                    <%- include('partials/category_others', { news: othersNews }) %>
 
 
                   </div>
@@ -262,7 +262,7 @@
       <!-- End Start youtube -->
       <!--  Older Articles start -->
       
-      <%- include('partials/older_news', { news: limitedNews }) %>
+      <%- include('partials/older_news', { news: allNews }) %>
       <!--Older Articles End -->
       <!--Start pagination -->
       <div class="pagination-area pb-45 text-center">

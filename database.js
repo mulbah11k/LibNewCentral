@@ -1,251 +1,294 @@
-/*global module, */
-/*global require, */
-/*eslint no-undef: "error"*/
 const sqlite3 = require('sqlite3').verbose();
+//const { tf, use } = require('@tensorflow/tfjs-node'); // Make sure to use the correct TensorFlow package
 
-// Set up SQLite database
+// Database connection
 const db = new sqlite3.Database('./news.db');
 
-// Create tables if they don't exist
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS news (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT NOT NULL,
-      description TEXT,
-      link TEXT NOT NULL,
-      imageUrl TEXT,
-      source_id INTEGER,
-      category_id INTEGER,  -- Adding this to link news to its category
-      releaseTime DATETIME,
-      UNIQUE(link),         -- Prevent duplicate news
-      FOREIGN KEY (category_id) REFERENCES categories(id) -- Ensure the category exists
-    )
-  `);
-  db.run(`
-    CREATE TABLE IF NOT EXISTS sources (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      url TEXT NOT NULL
-    )
-  `);
-  db.run(`
-    CREATE TABLE IF NOT EXISTS categories (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      category_name TEXT NOT NULL
-    )
-  `);
-  db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL,
-      email TEXT NOT NULL,
-      password TEXT NOT NULL
-    )
-  `);
-  db.run(`
-    CREATE TABLE IF NOT EXISTS user_activities (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER,
-      article_id INTEGER,
-      action_type TEXT,
-      action_date DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-  db.run(`
-    CREATE TABLE IF NOT EXISTS comments (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER,
-      article_id INTEGER,
-      comment TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-});
+// Load the Universal Sentence Encoder model
+let model;
 
-// Function to save news to the database
-async function saveNewsToDatabase(news) {
-  return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      news.forEach(async (article) => {
-        // Insert source
-        db.run('INSERT OR IGNORE INTO sources (name, url) VALUES (?, ?)', [article.source, 'URL'], function(err) {
-          if (err) return reject(err);
-          const sourceId = this.lastID;
+// Function to set up TensorFlow backend
+async function setupTensorFlowBackend() {
+    await tf.setBackend('cpu'); // or 'wasm', based on your environment
+    await tf.ready(); // Ensure TensorFlow is ready before using it
+    console.log("TensorFlow backend set successfully!");
+}
 
-          // Insert category
-          db.run('INSERT OR IGNORE INTO categories (category_name) VALUES (?)', [article.category], function(err) {
+// Initiali\ze the backend and then load the model
+setupTensorFlowBackend().then(() => {
+    use.load().then(loadedModel => {
+        model = loadedModel;
+        console.log("Model loaded successfully!");
+    }).catch(console.error);
+}).catch(console.error);
+
+// Function to calculate the similarity between two text strings using the Universal Sentence Encoder
+async function calculateSimilarity(text1, text2) {
+    if (!model) {
+        throw new Error("Model not loaded");
+    }
+    const embeddings = await model.embed([text1, text2]);
+    const similarityScore = tf.losses.cosineDistance(embeddings.slice([0, 0], [1]), embeddings.slice([1, 0], [1]), 0).dataSync()[0];
+    return 1 - similarityScore; // Return similarity score (higher is more similar)
+}
+
+// Function to analyze the meaning and categorize news based on the content
+async function categorizeNewsByContent(newsTitle, newsDescription) {
+    const categories = {
+        Business: ["economy", "finance", "market", "business"],
+        Sports: ["sports", "football", "basketball", "soccer", "athletics"],
+        Politics: ["politics", "election", "government", "policy"],
+        Education: ["education", "school", "university", "learning", "teaching"]
+    };
+
+    const newsText = `${newsTitle} ${newsDescription}`.toLowerCase();
+    const newsEmbedding = await model.embed([newsText]);
+
+    for (const [category, keywords] of Object.entries(categories)) {
+        if (keywords.some(keyword => newsText.includes(keyword))) {
+            return category; // Return the matched category
+        }
+    }
+    return "Others"; // Return "Others" if no category matches
+}
+
+// Function to get latest news for today only
+async function getLatestNewsByDate() {
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT news.id, news.title, news.description, news.imageUrl, sources.name AS source, news.link, news.releaseTime
+            FROM news
+            JOIN sources ON news.source_id = sources.id
+            WHERE date(news.releaseTime) = ?
+            ORDER BY news.releaseTime DESC
+        `;
+        db.all(query, [today], async (err, rows) => {
             if (err) return reject(err);
-            const categoryId = this.lastID;
 
-            // Insert news with category and source
-            db.run('INSERT OR IGNORE INTO news (title, description, link, imageUrl, source_id, category_id, releaseTime) VALUES (?, ?, ?, ?, ?, ?, ?)',
-              [article.title, article.description, article.link, article.imageUrl, sourceId, categoryId, article.releaseTime],
-              function(err) {
-                if (err) return reject(err);
-                console.log(`Inserted news with ID: ${this.lastID}`);
-              }
-            );
-          });
+            const uniqueNews = [];
+            const seenNewsContents = new Set();
+
+            for (let row of rows) {
+                const newsContent = `${row.title} ${row.description}`;
+                let isDuplicate = false;
+
+                // Check for similarity against already selected unique news
+                for (let existingNews of uniqueNews) {
+                    const existingContent = `${existingNews.title} ${existingNews.description}`;
+                    const similarity = await calculateSimilarity(newsContent, existingContent);
+                    if (similarity >= 0.8) { // Similarity threshold
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+
+                if (!isDuplicate) {
+                    row.category = await categorizeNewsByContent(row.title, row.description);
+                    uniqueNews.push(row);
+                }
+            }
+
+            resolve(uniqueNews); // Return only unique news items with today's date
         });
-      });
-      resolve();
     });
-  });
-}
-// Function to get the latest news (for today)
-async function getLatestNews() {
-  const today = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
-  return new Promise((resolve, reject) => {
-    const query = `
-      SELECT news.id, news.title, news.imageUrl, sources.name AS source, news.link, news.releaseTime
-      FROM news
-      JOIN sources ON news.source_id = sources.id
-      WHERE date(news.releaseTime) = ?
-      ORDER BY news.releaseTime DESC
-    `;
-    db.all(query, [today], (err, rows) => {
-      if (err) reject(err);
-      resolve(rows);
-    });
-  });
-}
-// Function to get one latest news (most recent)
-async function getOneLatestNews() {
-  return new Promise((resolve, reject) => {
-    const query = `
-      SELECT news.id, news.title, news.imageUrl, sources.name AS source, news.link, news.releaseTime
-      FROM news
-      JOIN sources ON news.source_id = sources.id
-      ORDER BY news.releaseTime DESC
-      LIMIT 1
-    `;
-    db.all(query, [], (err, rows) => {
-      if (err) reject(err);
-      resolve(rows[0]); // Return the single latest news item
-    });
-  });
 }
 
+// Function to get news by category
+async function getNewsByCategory(category) {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT news.id, news.title, news.description, news.imageUrl, sources.name AS source, news.link, news.releaseTime
+            FROM news
+            JOIN sources ON news.source_id = sources.id
+            ORDER BY news.releaseTime DESC
+        `;
 
-// Function to get random news (for weekly, monthly, or older)
-async function getRandomNews(limit = 10) {
-  return new Promise((resolve, reject) => {
-    const query = `
-      SELECT news.id, news.title, news.imageUrl, sources.name AS source, news.link, news.releaseTime
-      FROM news
-      JOIN sources ON news.source_id = sources.id
-      ORDER BY RANDOM()
-      LIMIT ?
-    `;
-    db.all(query, [limit], (err, rows) => {
-      if (err) reject(err);
-      resolve(rows);
+        db.all(query, [], async (err, rows) => {
+            if (err) return reject(err);
+
+            const categorizedNews = [];
+
+            for (const row of rows) {
+                const newsContent = `${row.title} ${row.description}`;
+                let isDuplicate = false;
+
+                // Check for similarity against already selected categorized news
+                for (let existingNews of categorizedNews) {
+                    const existingContent = `${existingNews.title} ${existingNews.description}`;
+                    const similarity = await calculateSimilarity(newsContent, existingContent);
+                    if (similarity >= 0.8) { // Similarity threshold
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+
+                if (!isDuplicate) {
+                    const newsCategory = await categorizeNewsByContent(row.title, row.description);
+                    if (category.toLowerCase() === newsCategory.toLowerCase() || (category.toLowerCase() === 'others' && newsCategory === 'Others')) {
+                        categorizedNews.push(row);
+                    }
+                }
+            }
+            resolve(categorizedNews); // Return unique news items based on the provided category
+        });
     });
-  });
-}
-// Function to get five random latest news items
-async function getRandomLatestNews(limit = 5) {
-  return new Promise((resolve, reject) => {
-    const query = `
-      SELECT news.id, news.title, news.imageUrl, sources.name AS source, news.link, news.releaseTime
-      FROM news
-      JOIN sources ON news.source_id = sources.id
-      WHERE date(news.releaseTime) = date('now')
-      ORDER BY RANDOM()
-      LIMIT ?
-    `;
-    db.all(query, [limit], (err, rows) => {
-      if (err) reject(err);
-      resolve(rows); // Return the list of random latest news items
-    });
-  });
 }
 
+// Function to get random unique news from the database
+async function getRandomUniqueNews(limit = 5) {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT news.id, news.title, news.description, news.imageUrl, sources.name AS source, news.link, news.releaseTime
+            FROM news
+            JOIN sources ON news.source_id = sources.id
+            ORDER BY RANDOM() LIMIT ?;
+        `;
+
+        db.all(query, [limit], async (err, rows) => {
+            if (err) return reject(err);
+
+            const uniqueNews = [];
+            const seenNewsContents = new Set();
+
+            for (const row of rows) {
+                const newsContent = `${row.title} ${row.description}`;
+                let isDuplicate = false;
+
+                // Check for duplicates against already selected unique news
+                for (let existingNews of uniqueNews) {
+                    const existingContent = `${existingNews.title} ${existingNews.description}`;
+                    const similarity = await calculateSimilarity(newsContent, existingContent);
+                    if (similarity >= 0.8) { // Similarity threshold
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+
+                if (!isDuplicate) {
+                    uniqueNews.push(row);
+                }
+
+                if (uniqueNews.length >= limit) {
+                    break; // Break if we have reached the limit of unique news
+                }
+            }
+
+            resolve(uniqueNews); // Return array of unique random news articles
+        });
+    });
+}
+
+// Function to get one random similar news based on semantic similarity
+async function getOneRandomSimilarNews(mainNewsId) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const mainNews = await getNewsById(mainNewsId);
+            if (!mainNews) return resolve(null);
+
+            const query = `
+                SELECT news.id, news.title, news.description, sources.name AS source, news.link, news.releaseTime
+                FROM news
+                JOIN sources ON news.source_id = sources.id
+                WHERE news.id != ?
+            `;
+            db.all(query, [mainNewsId], async (err, rows) => {
+                if (err) return reject(err);
+
+                const similarNews = [];
+                for (const article of rows) {
+                    const similarityTitle = await calculateSimilarity(mainNews.title, article.title);
+                    const similarityDescription = await calculateSimilarity(mainNews.description, article.description);
+
+                    // If similarity is above a threshold, consider it as similar news
+                    const similarityThreshold = 0.8; // You can adjust this threshold value
+                    if (similarityTitle >= similarityThreshold || similarityDescription >= similarityThreshold) {
+                        similarNews.push(article);
+                    }
+                }
+
+                // Randomly select one of the similar news articles
+                const randomSimilarNews = similarNews[Math.floor(Math.random() * similarNews.length)];
+                resolve(randomSimilarNews || null); // Return random similar news or null if none found
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+// Function to get multiple random similar news (returns an array)
+async function getRandomSimilarNews(mainNewsId, limit = 5) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const mainNews = await getNewsById(mainNewsId);
+            if (!mainNews) return resolve([]);
+
+            const query = `
+                SELECT news.id, news.title, news.description, sources.name AS source, news.link, news.releaseTime
+                FROM news
+                JOIN sources ON news.source_id = sources.id
+                WHERE news.id != ?
+            `;
+            db.all(query, [mainNewsId], async (err, rows) => {
+                if (err) return reject(err);
+
+                const similarNews = [];
+                for (const article of rows) {
+                    const similarityTitle = await calculateSimilarity(mainNews.title, article.title);
+                    const similarityDescription = await calculateSimilarity(mainNews.description, article.description);
+
+                    // If similarity is above a threshold, consider it as similar news
+                    const similarityThreshold = 0.8; // You can adjust this threshold value
+                    if (similarityTitle >= similarityThreshold || similarityDescription >= similarityThreshold) {
+                        similarNews.push(article);
+                    }
+                }
+
+                // Shuffle and limit the similar news array to the desired count
+                const randomSimilarNews = similarNews.sort(() => 0.5 - Math.random()).slice(0, limit);
+                resolve(randomSimilarNews); // Return array of random similar news
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+// Function to get news by ID
 async function getNewsById(id) {
-  const query = `
-      SELECT news.*, categories.category_name AS category_name, sources.name AS source_name
-      FROM news
-      JOIN categories ON news.category_id = categories.id
-      JOIN sources ON news.source_id = sources.id
-      WHERE news.id = ?
-  `;
-
-  const newsItem = await new Promise((resolve, reject) => {
-      db.get(query, [id], (err, row) => {
-          if (err) reject(err);
-          resolve(row);
-      });
-  });
-
-  return newsItem;
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT news.id, news.title, news.description, news.imageUrl, sources.name AS source, news.link, news.releaseTime
+            FROM news
+            JOIN sources ON news.source_id = sources.id
+            WHERE news.id = ?
+        `;
+        db.get(query, [id], (err, row) => {
+            if (err) return reject(err);
+            resolve(row); // Return the found news item or null
+        });
+    });
 }
 
-// Function to get all news
-// async function getAllNews() {
-//   return new Promise((resolve, reject) => {
-//     const query = `
-//       SELECT news.id, news.title, news.imageUrl, sources.name AS source, news.link, news.releaseTime
-//       FROM news
-//       JOIN sources ON news.source_id = sources.id
-//       ORDER BY news.releaseTime DESC
-//     `;
-//     db.all(query, [], (err, rows) => {
-//       if (err) reject(err);
-//       resolve(rows);
-//     });
-//   });
-// }
-// Function to get a specific number of news items
-async function getNewsWithLimit(limit = 50) {
-  return new Promise((resolve, reject) => {
-    const query = `
-      SELECT news.id, news.title, news.imageUrl, sources.name AS source, news.link, news.releaseTime
-      FROM news
-      JOIN sources ON news.source_id = sources.id
-      ORDER BY news.releaseTime DESC
-      LIMIT ?
-    `;
-    db.all(query, [limit], (err, rows) => {
-      if (err) reject(err);
-      resolve(rows);
+// Function to get all news from the database
+async function getAllNews() {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT news.id, news.title, news.description, news.imageUrl, sources.name AS source, news.link, news.releaseTime
+            FROM news
+            JOIN sources ON news.source_id = sources.id
+        `;
+        db.all(query, [], (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows); // Return all news articles
+        });
     });
-  });
 }
-// const getAllNews = async (limit = 8) => {
-//   // Query to get news with a dynamic limit along with their categories
-//   const query = `
-//       SELECT news.*, categories.category_name AS category_name
-//       FROM news
-//       JOIN categories ON news.category_id = categories.id
-//       LIMIT ?
-//   `;
-  
-//   return new Promise((resolve, reject) => {
-//     db.all(query, [limit], (err, rows) => {
-//       if (err) reject(err);
-//       resolve(rows);
-//     });
-//   });
-// };
-const getAllNews = async (limit = 8) => {
-  // Query to get news with a dynamic limit along with their categories and sources
-  const query = `
-      SELECT news.*, categories.category_name AS category_name, sources.name AS source_name
-      FROM news
-      JOIN categories ON news.category_id = categories.id
-      JOIN sources ON news.source_id = sources.id
-      LIMIT ?
-  `;
-  
-  return new Promise((resolve, reject) => {
-    db.all(query, [limit], (err, rows) => {
-      if (err) reject(err);
-      resolve(rows);
-    });
-  });
-};
+// Usage examples:
+// getLatestNewsByDate().then((news) => console.log(news));
+// getNewsByCategory('Business').then((newsList) => console.log(newsList));
+// getOneRandomSimilarNews(1).then((news) => console.log(news));
+// getRandomSimilarNews(1).then((newsList) => console.log(newsList));
 
-;
-
-module.exports = { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit, getAllNews, getNewsById};
+module.exports = { calculateSimilarity, getAllNews, getNewsById, getRandomSimilarNews, getOneRandomSimilarNews, getRandomUniqueNews, getNewsByCategory, getLatestNewsByDate, categorizeNewsByContent  };

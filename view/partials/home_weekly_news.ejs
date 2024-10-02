@@ -1,7 +1,7 @@
 <div class="weekly-news-area pt-50">
   <div class="container">
     <div class="weekly-wrapper">
-      <!-- section Tittle -->
+      <!-- Section Title -->
       <div class="row">
         <div class="col-lg-12">
           <div class="section-tittle mb-30">
@@ -15,7 +15,8 @@
             <% news.forEach(function(item) { %>
               <div class="weekly-single">
                 <div class="weekly-img">
-                  <img src="<%= item.imageUrl %>" alt="">
+                  <!-- Display image using proxy URL -->
+                  <img src="/proxy-image?url=<%= item.imageUrl %>" alt="">
                 </div>
                 <div class="weekly-caption">
                   <span class="color1"><%= item.source %></span>

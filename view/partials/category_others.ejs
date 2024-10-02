@@ -1,30 +1,26 @@
                     <div class="tab-pane fade" id="nav-techno" role="tabpanel" aria-labelledby="nav-technology">
                       <div class="whats-news-caption">
                         <div class="row">
-                            <% news.forEach(item => { %>
-                                <% if (['Education', 'Politics', 'Sport', 'Business'].includes(item.category_name)) { %>
-                                    <!-- Do nothing or add another condition if needed -->
-                                <% } else { %>
-                                <div class="col-lg-6 col-md-6">
+                          <% news.forEach(item => { %> <!-- Iterate through the news array -->
+                              <div class="col-lg-6 col-md-6">
                                   <div class="single-what-news mb-100">
-                                    <div class="what-img">
-                                      <img src="<%= item.imageUrl %>" alt="">
-                                    </div>
-                                    <div class="what-cap">
-                                      <span class="color1">
-                                        <%= item.source %>
-                                      </span>
-                                      <h4>
-                                        <a href="<%= item.link %>">
-                                          <%= item.title %>
-                                        </a>
-                                      </h4>
-                                        <a href="/details/<%= item.id %>" id="details-btn">Details</a>
-                                    </div>
+                                      <div class="what-img">
+                                          <img src="/proxy-image?url=<%= item.imageUrl %>" alt=""> <!-- Display news image -->
+                                      </div>
+                                      <div class="what-cap">
+                                          <span class="color1">
+                                              <%= item.source %> <!-- Display news source -->
+                                          </span>
+                                          <h4>
+                                              <a href="<%= item.link %>">
+                                                  <%= item.title %> <!-- Display news title -->
+                                              </a>
+                                          </h4>
+                                          <a href="/details/<%= item.id %>" id="details-btn">Details</a> <!-- Link to news details page -->
+                                      </div>
                                   </div>
-                                </div>
-                              <% } %>
-                            <% }); %>
-                          </div>
+                              </div>
+                          <% }); %> <!-- End of iteration -->
+                      </div>
                       </div>
                     </div>

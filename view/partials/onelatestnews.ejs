@@ -1,14 +1,14 @@
 <div class="trending-top mb-30">
-    <div class="trend-top-img">
-      <img src="<%= news.imageUrl %>" alt="">
+  <div class="trend-top-img">
+      <img src="/proxy-image?url=<%= news.imageUrl %>" alt="">
+
       <div class="trend-top-cap">
-        <span><%= news.source %></span>
-        <span class="color1 date_s"><%= new Date(news.releaseTime).toLocaleDateString() %></span>
-        <h2>
-          <a href="<%= news.link %>"><%= news.title %></a>
-        </h2>
+          <span><%= news.source %></span>
+          <span class="color1 date_s"><%= new Date(news.releaseTime).toLocaleDateString() %></span>
+          <h2>
+              <a href="<%= news.link %>"><%= news.title %></a>
+          </h2>
           <a href="/details/<%= news.id %>" id="details-btn">Details</a>
       </div>
-    </div>
   </div>
-  
+</div>

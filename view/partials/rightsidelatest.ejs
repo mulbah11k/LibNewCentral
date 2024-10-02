@@ -1,8 +1,8 @@
 <div class="col-lg-4">
   <% news.forEach(function(item) { %>
-    <div class="trand-right-single d-flex">
+    <div class="trand-right-single d-flex mb-3"> <!-- Added margin-bottom for spacing -->
       <div class="trand-right-img">
-        <img src="<%= item.imageUrl %>" alt="">
+        <img src="/proxy-image?url=<%= item.imageUrl %>" alt="">
       </div>
       <div class="trand-right-cap">
         <span class="color1"><%= item.source %></span>

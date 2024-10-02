@@ -4,11 +4,13 @@
 const express = require("express");
 const path = require("path");
 const puppeteer = require('puppeteer');
+const axios = require('axios');
+
 const cron = require('node-cron');
-const { saveNewsToDatabase, getLatestNews, getRandomNews, getOneLatestNews, getRandomLatestNews, getNewsWithLimit, getAllNews, getNewsById} = require('./database');
+const { calculateSimilarity, getAllNews, getNewsById, getRandomSimilarNews, getOneRandomSimilarNews, getRandomUniqueNews, getNewsByCategory, getLatestNewsByDate, categorizeNewsByContent  } = require('./database');
 //const db = require('./cronJobs'); // This imports the cron jobs
 const app = express();
-const port = 2000;
+const port = 3000;
 
 // Set up EJS as the template engine
 app.set('view engine', 'ejs');
@@ -29,21 +31,28 @@ app.use(express.static('public', {
 app.get('/', async (req, res) => {
   try {
     // Fetch different types of news data
-    const latestNews = await getLatestNews();
-    const randomNews = await getRandomNews(10);
-    const oneLatestNews = await getOneLatestNews();
-    const randomLatestNews = await getRandomLatestNews(5);
-    const limitedNews = await getNewsWithLimit(10); // Example limit of 50 news items
-    const allNews = await getAllNews(10); // Example limit of 50 news items
-
+    const latestNews = await getLatestNewsByDate();
+    const randomNews = await getRandomUniqueNews(10);
+    const othersNews = await getNewsByCategory('Others');
+    const politicsNews = await getNewsByCategory('Politics');
+    const educationNews = await getNewsByCategory('Education');
+    const businessNews = await getNewsByCategory('Business');
+    const sportsNews = await getNewsByCategory('Sports');
+    const oneSimilarNews = await getOneRandomSimilarNews(1); // Get one similar news to the news with ID 1
+    const randomSimilarNews = await getRandomSimilarNews(1); // Get multiple similar news to the news with ID 1
+    const allNews = await getAllNews(); // Get all news
 
     // Render the main template with all the required data
     res.render('index', { 
       latestNews, 
       randomNews, 
-      oneLatestNews, 
-      randomLatestNews, 
-      limitedNews,
+      othersNews,
+      educationNews,
+      politicsNews,
+      businessNews,
+      sportsNews ,
+      oneSimilarNews, 
+      randomSimilarNews,
       allNews 
     });
   } catch (err) {
@@ -51,7 +60,18 @@ app.get('/', async (req, res) => {
     res.status(500).send("Error retrieving news data");
   }
 });
-
+// Proxy route to fetch images from the source site
+app.get('/proxy-image', async (req, res) => {
+  const imageUrl = req.query.url; // Image URL passed as a query parameter
+  try {
+    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    res.setHeader('Content-Type', response.headers['content-type']);
+    res.send(response.data);
+  } catch (err) {
+    console.error('Error fetching image:', err);
+    res.status(500).send('Failed to load image');
+  }
+});
 // Route for the about page
 app.get('/about', (req, res) => {
     res.render('about');  // Render about.ejs
@@ -80,13 +100,9 @@ app.get('/details/:id', async (req, res) => {
 app.get('/categori', async (req, res) => {
   try {
     // Fetch different types of news data
-    const latestNews = await getLatestNews();
-    const randomNews = await getRandomNews(10);
-    const oneLatestNews = await getOneLatestNews();
-    const randomLatestNews = await getRandomLatestNews(5);
-    const limitedNews = await getNewsWithLimit(10); // Example limit of 50 news items
-    const allNews = await getAllNews(10); // Example limit of 50 news items
-
+    const oneLatestNews = getOneRandomSimilarNews();
+    const newsByCategory = getNewsByCategory()
+    const latestNews = getLatestNewsByDate()
 
     // Render the main template with all the required data
     res.render('categori', { 
