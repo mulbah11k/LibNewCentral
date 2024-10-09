@@ -4,7 +4,12 @@
           <div class="col-lg-4">
               <div class="single-bottom mb-35">
                   <div class="trend-bottom-img mb-30">
-                      <img src="/proxy-image?url=<%= item.imageUrl %>" alt="">
+                    <% if (item.imageUrl) { %>
+                        <!-- Use the proxy route to fetch and display the image -->
+                        <img src="/proxy-image?url=<%= encodeURIComponent(item.imageUrl) %>" alt="News Image" style="max-width: 600px; height: auto;">
+                    <% } else { %>
+                        <p>No image available for this news article.</p>
+                    <% } %>
                   </div>
                   <div class="trend-bottom-cap">
                       <span class="color1"><%= item.source %></span>
@@ -12,7 +17,9 @@
                       <h4>
                           <a href="<%= item.link %>" target="_blank"><%= item.title %></a>
                       </h4>
-                      <a href="/details/<%= item.id %>" id="details-btn">Details</a>
+                      <a href="/details/<%= item.id %>" id="details-btn">Details</a><br><br>
+                      <a href="/similar/<%= item.id %>" id="details-btn">similarNews</a>
+
                   </div>
               </div>
           </div>

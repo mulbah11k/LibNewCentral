@@ -15,15 +15,22 @@
                       <% news.forEach(function(item) { %>
                           <div class="weekly2-single">
                               <div class="weekly2-img">
-                                  <img src="/proxy-image?url=<%= item.imageUrl %>" alt="">
-                              </div>
+                                <% if (item.imageUrl) { %>
+                                    <!-- Use the proxy route to fetch and display the image -->
+                                    <img src="/proxy-image?url=<%= encodeURIComponent(item.imageUrl) %>" alt="News Image" style="max-width: 600px; height: auto;">
+                                <% } else { %>
+                                    <p>No image available for this news article.</p>
+                                <% } %>
+                            </div>
                               <div class="weekly2-caption">
                                   <span class="color1"><%= item.source %></span>
                                   <p><%= new Date(item.releaseTime).toLocaleDateString() %></p>
                                   <h4>
                                       <a href="<%= item.link %>" target="_blank"><%= item.title %></a>
                                   </h4>
-                                  <a href="/details/<%= item.id %>" id="details-btn">Details</a>
+                                  <a href="/details/<%= item.id %>" id="details-btn">Details</a><br><br>
+                                  <a href="/similar/<%= item.id %>" id="details-btn">similarNews</a>
+                          
                               </div>
                           </div>
                       <% }); %>

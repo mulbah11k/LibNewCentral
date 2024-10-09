@@ -15,8 +15,12 @@
             <% news.forEach(function(item) { %>
               <div class="single-recent mb-100">
                 <div class="what-img">
-                  <!-- <img src="<%= item.imageUrl || 'assets/img/news/recent1.jpg' %>" alt=""> -->
-                  <img src="/proxy-image?url=<%= item.imageUrl %>" alt="">
+                  <% if (item.imageUrl) { %>
+                    <!-- Use the proxy route to fetch and display the image -->
+                    <img src="/proxy-image?url=<%= encodeURIComponent(item.imageUrl) %>" alt="News Image" style="max-width: 600px; height: auto;">
+                <% } else { %>
+                    <p>No image available for this news article.</p>
+                <% } %>
 
                 </div>
                 <div class="what-cap">

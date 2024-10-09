@@ -1,12 +1,13 @@
 <div class="trending-top mb-30">
   <div class="trend-top-img">
-      <img src="/proxy-image?url=<%= news.imageUrl %>" alt="">
+      <!-- Use the proxy route to fetch and display the image -->
+      <img src="/proxy-image?url=<%= encodeURIComponent(news.imageUrl) %>" alt="News Image" style="max-width: 600px; height: auto;">
 
       <div class="trend-top-cap">
-          <span><%= news.source %></span>
+          <span><%= news ? news.source : 'Unknown Source' %></span>
           <span class="color1 date_s"><%= new Date(news.releaseTime).toLocaleDateString() %></span>
           <h2>
-              <a href="<%= news.link %>"><%= news.title %></a>
+              <a href="<%= news.link %>"><%= news ? news.title : 'No title available' %><</a>
           </h2>
           <a href="/details/<%= news.id %>" id="details-btn">Details</a>
       </div>

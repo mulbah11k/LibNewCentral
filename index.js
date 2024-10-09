@@ -2,16 +2,29 @@
 /*global __dirname, */
 /*eslint no-undef: "error"*/
 const express = require("express");
+
 const path = require("path");
 const puppeteer = require('puppeteer');
 const axios = require('axios');
 
 const cron = require('node-cron');
-const { calculateSimilarity, getAllNews, getNewsById, getRandomSimilarNews, getOneRandomSimilarNews, getRandomUniqueNews, getNewsByCategory, getLatestNewsByDate, categorizeNewsByContent  } = require('./database');
+const { ccalculateSimilarity,
+  categorizeNewsByContent,
+  getLatestNewsByDate,
+  getLatestTitleNewsByDate,
+  cosineSimilarity,
+  getNewsByCategory,
+  getRandomUniqueNews,
+  getOneRandomLatestNewsByDate,
+  getAllNews,
+  getSimilarNewsById,
+  saveNewsToDatabase,
+  getNewsById,
+  getUniqueSimilarNewsById
+   } = require('./database');
 //const db = require('./cronJobs'); // This imports the cron jobs
 const app = express();
 const port = 3000;
-
 // Set up EJS as the template engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'view'));
@@ -31,20 +44,22 @@ app.use(express.static('public', {
 app.get('/', async (req, res) => {
   try {
     // Fetch different types of news data
-    const latestNews = await getLatestNewsByDate();
+    const { firstSection, secondSection } = await getLatestNewsByDate();
     const randomNews = await getRandomUniqueNews(10);
     const othersNews = await getNewsByCategory('Others');
     const politicsNews = await getNewsByCategory('Politics');
     const educationNews = await getNewsByCategory('Education');
     const businessNews = await getNewsByCategory('Business');
     const sportsNews = await getNewsByCategory('Sports');
-    const oneSimilarNews = await getOneRandomSimilarNews(1); // Get one similar news to the news with ID 1
-    const randomSimilarNews = await getRandomSimilarNews(1); // Get multiple similar news to the news with ID 1
+    const oneSimilarNews = await getOneRandomLatestNewsByDate(); // Get one similar news to the news with ID 1
     const allNews = await getAllNews(); // Get all news
+    const latesttitle = await getLatestTitleNewsByDate(); 
 
     // Render the main template with all the required data
     res.render('index', { 
-      latestNews, 
+      firstSection, 
+      secondSection,
+      latesttitle,
       randomNews, 
       othersNews,
       educationNews,
@@ -52,7 +67,6 @@ app.get('/', async (req, res) => {
       businessNews,
       sportsNews ,
       oneSimilarNews, 
-      randomSimilarNews,
       allNews 
     });
   } catch (err) {
@@ -60,18 +74,71 @@ app.get('/', async (req, res) => {
     res.status(500).send("Error retrieving news data");
   }
 });
-// Proxy route to fetch images from the source site
+// Improved proxy route for image fetching with additional logging and headers
 app.get('/proxy-image', async (req, res) => {
-  const imageUrl = req.query.url; // Image URL passed as a query parameter
+  const imageUrl = req.query.url; // Get the image URL from query parameters
+
+  // Check if the URL is present and valid
+  if (!imageUrl) {
+      console.error('Error: No image URL provided');
+      return res.status(400).send('Image URL is required');
+  }
+
   try {
-    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    res.setHeader('Content-Type', response.headers['content-type']);
-    res.send(response.data);
+      // Verify that the URL protocol is either HTTP or HTTPS
+      const validProtocols = ['http:', 'https:'];
+      const urlProtocol = new URL(imageUrl).protocol;
+
+      if (!validProtocols.includes(urlProtocol)) {
+          console.error('Protocol mismatch error:', imageUrl);
+          return res.status(400).send('Invalid protocol. Only HTTP and HTTPS are allowed.');
+      }
+
+      // Log the image URL for debugging
+      console.log('Fetching image from:', imageUrl);
+
+      // Set up Axios configuration to prevent protocol issues
+      const axiosConfig = {
+          responseType: 'arraybuffer', // To handle binary data like images
+          proxy: false, // Disable the default proxy behavior in Axios
+          maxRedirects: 5, // Limit the number of redirects to prevent infinite loops
+      };
+
+      // Fetch the image using Axios
+      const response = await axios.get(imageUrl, axiosConfig);
+
+      // Check if a valid response was received
+      if (response.status === 200) {
+          // Set the appropriate content type and send the image data
+          res.setHeader('Content-Type', response.headers['content-type']);
+          res.setHeader('Cache-Control', 'public, max-age=31536000'); // Optional: Cache the image
+          res.send(response.data);
+      } else {
+          console.error(`Failed to fetch image. Status: ${response.status}, URL: ${imageUrl}`);
+          res.status(response.status).send('Failed to load image');
+      }
   } catch (err) {
-    console.error('Error fetching image:', err);
-    res.status(500).send('Failed to load image');
+      // Handle different types of errors
+      if (err.response) {
+          // Axios error with response (status code not in the range of 2xx)
+          if (err.response.status === 404) {
+              console.error(`Image not found: ${imageUrl}`);
+              return res.status(404).send('Image not found');
+          }
+          console.error(`Failed to fetch image. Status: ${err.response.status}, URL: ${imageUrl}`);
+          return res.status(err.response.status).send('Failed to load image');
+      } else if (err.request) {
+          // Axios error without response (request made but no response received)
+          console.error('No response received for the request:', err.request);
+          return res.status(500).send('Failed to load image');
+      } else {
+          // Other errors
+          console.error('Error fetching image:', err.message);
+          return res.status(500).send('Failed to load image');
+      }
   }
 });
+
 // Route for the about page
 app.get('/about', (req, res) => {
     res.render('about');  // Render about.ejs
@@ -95,8 +162,18 @@ app.get('/details/:id', async (req, res) => {
       res.status(404).send('News not found');  // Handle case if no news item is found
   }
 });
+// Route to get unique similar news by ID
+app.get('/similar/:id', async (req, res) => {
+  try {
+      const newsId = req.params.id; // Get the news ID from the request parameters
+      const similarNews = await getUniqueSimilarNewsById(newsId); // Get similar news articles
 
-
+      res.render('similar', { similarNews }); // Render the EJS template with similar news
+  } catch (error) {
+      console.error('Error fetching similar news:', error);
+      res.status(500).send('An error occurred while fetching similar news.');
+  }
+});
 app.get('/categori', async (req, res) => {
   try {
     // Fetch different types of news data

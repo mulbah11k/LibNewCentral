@@ -36,18 +36,18 @@
         <div class="container">
           <div class="trending-main">
             <!-- Trending Tittle -->
-            <%- include('partials/trending_tittle', { news: latestNews }) %>
+            <%- include('partials/trending_tittle', { news: latesttitle }) %>
 
             <div class="row">
               <div class="col-lg-8">
                 <!-- Trending Top -->
                 <%- include('partials/onelatestnews', { news: oneSimilarNews }) %>
                 <!-- Trending Bottom -->
-                <%- ihbnclude('partials/trending-bottom', { news: latestNews }) %>
+                <%- include('partials/trending-bottom', { news: firstSection }) %>
 
               </div>
               <!-- Riht content -->
-              <%- include('partials/rightsidelatest', { news: latestNews }) %>
+              <%- include('partials/rightsidelatest', { news: secondSection }) %>
             </div>
           </div>
         </div>

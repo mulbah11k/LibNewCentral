@@ -2,14 +2,21 @@
   <% news.forEach(function(item) { %>
     <div class="trand-right-single d-flex mb-3"> <!-- Added margin-bottom for spacing -->
       <div class="trand-right-img">
-        <img src="/proxy-image?url=<%= item.imageUrl %>" alt="">
+        <% if (item.imageUrl) { %>
+          <!-- Use the proxy route to fetch and display the image -->
+          <img src="/proxy-image?url=<%= encodeURIComponent(item.imageUrl) %>" alt="News Image" style="max-width: 600px; height: auto;">
+      <% } else { %>
+          <p>No image available for this news article.</p>
+      <% } %>
       </div>
       <div class="trand-right-cap">
         <span class="color1"><%= item.source %></span>
         <h4>
           <a href="<%= item.link %>"><%= item.title %></a>
         </h4>
-        <a href="/details/<%= item.id %>" id="details-btn">Details</a>
+        <a href="/details/<%= item.id %>" id="details-btn">Details</a><br><br>
+        <a href="/similar/<%= item.id %>" id="details-btn">similarNews</a>
+
       </div>
     </div>
   <% }); %>
