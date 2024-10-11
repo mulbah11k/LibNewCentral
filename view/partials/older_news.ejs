@@ -28,8 +28,17 @@
                   <h4>
                     <a href="<%= item.link || '#' %>"><%= item.title || 'Welcome To The Best Model Winner Contest' %></a>
                   </h4>
-                  <a href="/details/<%= item.id %>" id="details-btn">Details</a>
-                </div>
+                  <div class="news-icons">
+                    <!-- Details Icon -->
+                    <a href="/details/<%= item.id %>" class="details-icon" title="Details">
+                        <i class="fas fa-info-circle"></i> Details
+                    </a>
+            
+                    <!-- Similar News Icon -->
+                    <a href="/similar/<%= item.id %>" class="similar-icon" title="Similar News">
+                        <i class="fas fa-clone"></i> Similar News
+                    </a>
+                </div>              </div>
               </div>
             <% }); %>
           </div>

@@ -21,8 +21,17 @@
                               <%= item.title %> <!-- Display news title -->
                           </a>
                       </h4>
-                      <a href="/details/<%= item.id %>" id="details-btn">Details</a> <br><br>
-                      <a href="/similar/<%= item.id %>" id="details-btn">similarNews</a>
+                      <div class="news-icons">
+                        <!-- Details Icon -->
+                        <a href="/details/<%= item.id %>" class="details-icon" title="Details">
+                            <i class="fas fa-info-circle"></i> Details
+                        </a>
+                
+                        <!-- Similar News Icon -->
+                        <a href="/similar/<%= item.id %>" class="similar-icon" title="Similar News">
+                            <i class="fas fa-clone"></i> Similar News
+                        </a>
+                    </div>
               <!-- Link to news details page -->
                   </div>
               </div>

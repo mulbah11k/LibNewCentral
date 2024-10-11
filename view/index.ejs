@@ -6,7 +6,8 @@
     <title>LibNewsCenter </title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="manifest" href="site.webmanifest">
+    <!-- <link rel="manifest" href="site.webmanifest"> -->
+    <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
     <!-- CSS here -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -21,11 +22,37 @@
     <link rel="stylesheet" href="css/slick.css">
     <link rel="stylesheet" href="css/nice-select.css">
     <link rel="stylesheet" href="css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+      .install-icon {
+        position: fixed;
+        top: 3px;
+        right: 10px;
+        z-index: 1000;
+        /* Ensures the icon appears above other content */
+      }
+  
+      .install-icon button {
+        background-color:rgb(99, 94, 94);
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 20%;
+        cursor: pointer;
+        font-size: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+  
+      .install-icon button:hover {
+        background-color: #45a049;
+      }
+    </style>
   </head>
   <body>
     <!-- The header file is in the link path that is below-->
 
     <%- include('partials/header.ejs') %>
+   
 
     <!-- The header file is in the link path that is below-->
 
@@ -43,11 +70,11 @@
                 <!-- Trending Top -->
                 <%- include('partials/onelatestnews', { news: oneSimilarNews }) %>
                 <!-- Trending Bottom -->
-                <%- include('partials/trending-bottom', { news: firstSection }) %>
+                <%- include('partials/trending-bottom', { news: secondSection }) %>
 
               </div>
               <!-- Riht content -->
-              <%- include('partials/rightsidelatest', { news: secondSection }) %>
+              <%- include('partials/rightsidelatest', { news: firstSection }) %>
             </div>
           </div>
         </div>
@@ -55,8 +82,12 @@
       <!-- Trending Area End -->
       <!--   Weekly-News start -->
       <%- include('partials/home_weekly_news', { news: randomNews }) %>
-
-
+      <!-- Pwa integration -->
+<div id="installBanner" class="install-icon">
+  <button id="installButton" title="Install App">
+    📥 Install
+  </button>
+</div>
       <!-- End Weekly-News -->
       <!-- Whats New Start -->
       <section class="whats-news-area pt-50 pb-20">

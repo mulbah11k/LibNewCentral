@@ -9,7 +9,16 @@
           <h2>
               <a href="<%= news.link %>"><%= news ? news.title : 'No title available' %><</a>
           </h2>
-          <a href="/details/<%= news.id %>" id="details-btn">Details</a>
-      </div>
+          <div class="news-icons">
+            <!-- Details Icon -->
+            <a href="/details/<%= news.id %>" class="details-icon" title="Details">
+                <i class="fas fa-info-circle"></i> Details
+            </a>
+    
+            <!-- Similar News Icon -->
+            <a href="/similar/<%= news.id %>" class="similar-icon" title="Similar News">
+                <i class="fas fa-clone"></i> Similar News
+            </a>
+        </div>     </div>
   </div>
 </div>

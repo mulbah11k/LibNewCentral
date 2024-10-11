@@ -4,7 +4,7 @@
       <div class="trand-right-img">
         <% if (item.imageUrl) { %>
           <!-- Use the proxy route to fetch and display the image -->
-          <img src="/proxy-image?url=<%= encodeURIComponent(item.imageUrl) %>" alt="News Image" style="max-width: 600px; height: auto;">
+          <img src="/proxy-image?url=<%= encodeURIComponent(item.imageUrl) %>" alt="News Image" style="width: 100%; height: auto; object-fit: cover;">
       <% } else { %>
           <p>No image available for this news article.</p>
       <% } %>
@@ -12,11 +12,19 @@
       <div class="trand-right-cap">
         <span class="color1"><%= item.source %></span>
         <h4>
-          <a href="<%= item.link %>"><%= item.title %></a>
+          <a href="<%= item.link %>"><%= item.title.substring(0, 50) + "....." %></a>
         </h4>
-        <a href="/details/<%= item.id %>" id="details-btn">Details</a><br><br>
-        <a href="/similar/<%= item.id %>" id="details-btn">similarNews</a>
-
+        <div class="news-icons">
+          <!-- Details Icon -->
+          <a href="/details/<%= item.id %>" class="details-icon" title="Details">
+              <i class="fas fa-info-circle"></i> Details
+          </a>
+  
+          <!-- Similar News Icon -->
+          <a href="/similar/<%= item.id %>" class="similar-icon" title="Similar News">
+              <i class="fas fa-clone"></i> Similar News
+          </a>
+      </div>
       </div>
     </div>
   <% }); %>

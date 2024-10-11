@@ -26,11 +26,19 @@
                                   <span class="color1"><%= item.source %></span>
                                   <p><%= new Date(item.releaseTime).toLocaleDateString() %></p>
                                   <h4>
-                                      <a href="<%= item.link %>" target="_blank"><%= item.title %></a>
+                                      <a href="<%= item.link %>" target="_blank"><%= item.title.substring(0, 50) + "....." %></a>
                                   </h4>
-                                  <a href="/details/<%= item.id %>" id="details-btn">Details</a><br><br>
-                                  <a href="/similar/<%= item.id %>" id="details-btn">similarNews</a>
-                          
+                                  <div class="news-icons">
+                                    <!-- Details Icon -->
+                                    <a href="/details/<%= item.id %>" class="details-icon" title="Details">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </a>
+                            
+                                    <!-- Similar News Icon -->
+                                    <a href="/similar/<%= item.id %>" class="similar-icon" title="Similar News">
+                                        <i class="fas fa-clone"></i> Similar News
+                                    </a>
+                                </div>
                               </div>
                           </div>
                       <% }); %>

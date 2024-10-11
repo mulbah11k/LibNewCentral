@@ -21,7 +21,8 @@
     "npmlog": "^7.0.1",
     "puppeteer": "^23.4.1",
     "rimraf": "^5.0.10",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "workbox-cli": "^7.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.10.0",

@@ -582,7 +582,7 @@ async function getUniqueSimilarNewsById(newsId) {
                     );
 
                     // Check for uniqueness and similarity threshold
-                    if (similarity >= 0.8) { // Similarity threshold
+                    if (similarity >= 0.6) { // Similarity threshold
                         uniqueSimilarNews.push(row);
                     }
                 }
@@ -592,8 +592,97 @@ async function getUniqueSimilarNewsById(newsId) {
         });
     });
 }
+// To get the news summary
+async function summarizeNews(newsId) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Fetch the unique news item
+            const uniqueNews = await getNewsById(newsId);
+            if (!uniqueNews) {
+                return reject(new Error(`No news found for ID: ${newsId}`));
+            }
+
+            // Fetch similar news articles
+            const similarNews = await getUniqueSimilarNewsById(newsId);
+
+            // Prepare text for summarization
+            let textToSummarize = `Main News:\nTitle: ${uniqueNews.title}\nDescription: ${uniqueNews.description}\n\nSimilar News:\n`;
+
+            // Include similar news in the summary text
+            similarNews.forEach(news => {
+                textToSummarize += `Title: ${news.title}\nDescription: ${news.description}\n\n`;
+            });
+
+            // Truncate text if too long
+            if (textToSummarize.length > 3000) {
+                textToSummarize = textToSummarize.substring(0, 3000) + '...';
+            }
+
+            // Call the summarization API
+            const summary = await getSummaryFromHuggingFaceAPI(textToSummarize);
+
+            // Resolve with the summary text
+            resolve(summary);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
 
 
+
+async function getSummaryFromHuggingFaceAPI(text) {
+    const yourAPIKey = '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';
+    const modelEndpoint = 'https://api-inference.huggingface.co/models/facebook/bart-large-cnn';
+
+    const maxRetries = 5; // Set the maximum number of retries
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+        try {
+            // Print the input to ensure it's correct before making the API request
+            console.log('Text to be summarized:', text);
+
+            const response = await axios.post(
+                modelEndpoint,
+                { inputs: text },
+                {
+                    headers: {
+                        Authorization: `Bearer ${yourAPIKey}`
+                    }
+                }
+            );
+
+            // Check and log the entire response from Hugging Face
+            console.log('API Response:', response.data);
+
+            // Handle the expected response structure and extract the summary text
+            if (Array.isArray(response.data) && response.data[0] && response.data[0].summary_text) {
+                return response.data[0].summary_text;
+            } else {
+                throw new Error('Unexpected API response structure');
+            }
+        } catch (error) {
+            // Log the error message
+            console.error('Error while fetching summary from Hugging Face:', error.message);
+
+            // Handle loading error specifically
+            if (error.response && error.response.data.error === 'Model facebook/bart-large-cnn is currently loading') {
+                // Wait for a bit before retrying
+                const waitTime = 2000; // Wait for 2 seconds
+                console.log(`Model is loading, retrying in ${waitTime / 1000} seconds...`);
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+                attempt++;
+                continue; // Retry the request
+            }
+
+            // Throw a generic error to maintain the structure
+            throw new Error('Could not fetch summary');
+        }
+    }
+
+    throw new Error('Max retries reached. Could not fetch summary.');
+}
 // Function to get one random news article scraped on the same day
 async function getOneRandomLatestNewsByDate() {
     return new Promise((resolve, reject) => {
@@ -643,20 +732,26 @@ async function getNewsById(id) {
         });
     });
 }
-async function getAllNews() {
+async function getAllNews(limit = 10) {  // Set a default limit value of 10 if no value is provided
     return new Promise((resolve, reject) => {
+        // SQL query to select unique news articles based on the title and releaseTime
         const query = `
-            SELECT news.id, news.title, news.description, news.imageUrl, sources.name AS source, news.link, news.releaseTime
+            SELECT DISTINCT news.title, news.id, news.description, news.imageUrl, 
+                            sources.name AS source, news.link, news.releaseTime
             FROM news
             JOIN sources ON news.source_id = sources.id
+            GROUP BY news.title, news.releaseTime  -- Group by unique titles and releaseTime to avoid duplicates
             ORDER BY news.releaseTime DESC
+            LIMIT ?;  -- Limit the number of rows based on the 'limit' parameter
         `;
-        db.all(query, [], (err, rows) => {
+        
+        db.all(query, [limit], (err, rows) => {
             if (err) return reject(err);
-            resolve(rows); // Return all news articles
+            resolve(rows); // Return the unique news articles limited by the specified amount
         });
     });
 }
+
 // (async () => {
 //     const onenews = await getOneRandomLatestNewsByDate();
 //     const { firstSection, secondSection } = await getLatestNewsByDate();
@@ -681,6 +776,8 @@ module.exports = {
     getSimilarNewsById,
     saveNewsToDatabase,
     getNewsById,
+    summarizeNews,
+    getSummaryFromHuggingFaceAPI
     
 };
 

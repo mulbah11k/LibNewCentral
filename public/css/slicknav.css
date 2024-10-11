@@ -261,21 +261,24 @@
 	color: #dca73a;
 }
 .weekly-img img {
-  width: 330px;
-  height: 307px;
-  object-fit: cover; /* This will crop the image to fit without distorting */
+    width: 370px;
+    height: 432px;
 }
 
 /* Monthly Top News Images */
 .weekly2-img img {
-  width: 330px;
-  height: 307px;
-  object-fit: cover; /* Crops image without distortion */
+  width: 270px;
+  height: 175px;
 }
 .recent-articles .single-recent .what-img img {
-  width: 330px;
-  height: 307px;
-  object-fit: cover; /* Crops image without distortion */
+  width: 370px;
+  height: 344px;
+  object-fit: cover; /* Or 'contain', depending on your needs */
+}
+.what-img img{
+  width: 370px;
+  height: 344px;
+  object-fit: cover; /* Or use 'contain' to fit without cropping */
 }
 .single-what-news .mb-100 .what-img img {
   width: 20rem;
@@ -287,7 +290,46 @@
   max-width: 609px;
   height: auto;
 }
+     /* Icons for details and similar news */
+     .news-icons {
+      display: flex;
+      justify-content: flex-start; /* Aligning icons to the left */
+      margin-top: 10px;
+  }
 
+  .news-icons a {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      margin-right: 15px; /* Spacing between icons */
+      transition: color 0.3s ease, transform 0.2s ease;
+  }
+
+  .news-icons a:hover {
+      color: #007bff;
+      transform: scale(1.1);
+  }
+
+  /* Styling for Details Icon */
+  .news-icons .details-icon {
+      color: #e67e22; /* Orange color */
+  }
+
+  .news-icons .details-icon i {
+      margin-right: 8px;
+      font-size: 20px; /* Icon size */
+  }
+
+  /* Styling for Similar News Icon */
+  .news-icons .similar-icon {
+      color: #3498db; /* Blue color */
+  }
+
+  .news-icons .similar-icon i {
+      margin-right: 8px;
+      font-size: 20px; /* Icon size */
+  }
 @media (max-width: 768px) {
   .responsive-image {
       max-width: 400px; /* Resize image for smaller screens */

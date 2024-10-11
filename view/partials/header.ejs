@@ -12,10 +12,11 @@
                     <img src="/img/icon/header_icon1.png" alt="">34ºc, Sunny
                   </li>
                   <li>
-                    <img src="/img/icon/header_icon1.png" alt="">Tuesday, 30th Set, 2024
+                    <img src="/img/icon/header_icon1.png" alt="">Tuesday, 11th Oct, 2024
                   </li>
                 </ul>
               </div>
+
               <div class="header-info-right">
                 <ul class="header-social">
                   <li><a href="#"><i class="fab fa-twitter"></i></a></li>
@@ -61,14 +62,14 @@
                     <li><a href="about">About</a></li>
                     <li><a href="../latest_news">Latest News</a></li>
                     <li><a href="../contact">Contact</a></li>
-                    <li><a href="#">Pages</a>
+                    <!-- <li><a href="#">Pages</a>
                       <ul class="submenu">
                         <li><a href="/elements">Element</a></li>
                         <li><a href="/blog">Blog</a></li>
                         <li><a href="/single-blog">Blog Details</a></li>
                         <li><a href="/details">Category Details</a></li>
                       </ul>
-                    </li>
+                    </li> -->
                   </ul>
                 </nav>
               </div>
@@ -78,7 +79,8 @@
                 <i class="fas fa-search special-tag"></i>
                 <div class="search-box">
                   <form action="#">
-                    <input type="text" placeholder="Search">
+                    <!-- Search field -->
+        <input type="text" id="searchField" class="form-control form-control-sm" placeholder="Search news by title..." onkeyup="filterNews()">
                   </form>
                 </div>
               </div>
@@ -94,3 +96,4 @@
   </div>
   <!-- Header End -->
 </header>
+
