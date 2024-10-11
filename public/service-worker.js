@@ -2,7 +2,7 @@ const CACHE_NAME = 'express-pwa-cache-v1';
 const urlsToCache = [
   '/',
   // '/pwa.css', // Add your CSS file paths here
-  '/index.ejs',
+  '//js/index.ejs',
   '/index.js', // Add your JS file paths here
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png'

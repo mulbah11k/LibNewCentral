@@ -1,41 +1,40 @@
-const CACHE_NAME = 'express-pwa-cache-v1';
-const urlsToCache = [
-  '/',
-  // '/pwa.css', // Add your CSS file paths here
-  '/index.ejs',
-  '/index.js', // Add your JS file paths here
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
-];
+let deferredPrompt;
+const installBanner = document.getElementById('installBanner');
+const installButton = document.getElementById('installButton');
 
-// Install event
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-  );
+// Listen for the beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (event) => {
+  // Prevent the default mini-infobar from appearing
+  event.preventDefault();
+  // Store the event for later
+  deferredPrompt = event;
+  // Display the install icon
+  installBanner.style.display = 'block';
 });
 
-// Fetch event
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
+// Handle the install button click
+installButton.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt(); // Show the install prompt
+    const choiceResult = await deferredPrompt.userChoice;
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+    installButton.disabled = true; // Disable the install button
+    installBanner.style.display = 'none'; // Hide the install banner
+  }
 });
 
-// Activate event (for cache versioning)
-self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(registration => {
+        console.log('ServiceWorker registered with scope:', registration.scope);
+      })
+      .catch(error => {
+        console.log('ServiceWorker registration failed:', error);
+      });
+  });
+}
